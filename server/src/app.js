@@ -1,9 +1,9 @@
 import express from "express";
-import adminRoutes from "./routes/adminRoutes"
-import authRoutes from "./routes/authRoutes"
-import clientRoutes from "./routes/clientRoutes"
-import paymentRoutes from "./routes/paymentRoutes"
-import providerRoutes from "./routes/providerRoutes"
+import adminRoutes from "./routes/adminRoutes.js"
+import authRoutes from "./routes/authRoutes.js"
+import clientRoutes from "./routes/clientRoutes.js"
+import paymentRoutes from "./routes/paymentRoutes.js"
+import providerRoutes from "./routes/providerRoutes.js"
 const app = express();
 
 

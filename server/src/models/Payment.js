@@ -17,3 +17,4 @@ paidAt:{type:Date}
 )
 
 const Payment = mongoose.model("Payment",paymentSchema)
+export default Payment
