@@ -11,7 +11,7 @@ const router = express.Router();
 
 /**
  * Register user
- * POST /api/auth/register
+ * POST /api/auth/signup
  */
 router.post("/signup", signup);
 

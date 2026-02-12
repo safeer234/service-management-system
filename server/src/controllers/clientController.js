@@ -43,6 +43,8 @@ export const createServiceRequest = async (req, res) => {
       success: false,
       message: "Failed to create service request"
     });
+    console.log(error);
+    
   }
 };
 

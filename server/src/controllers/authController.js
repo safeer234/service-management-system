@@ -27,6 +27,7 @@ res.json({message:"signup succesfull",user})
 
 export const login = async (req, res) =>{
    try{
+       const { email, password } = req.body;
 const user = await User.findOne({email});
 if(!user)return res.status(400).json({message:"!invalid credentials"});
 
@@ -35,9 +36,14 @@ if(!user)return res.status(400).json({message:"!invalid credentials"});
 
       const token = generateToken(user);
       res.json({message:"Login succesfull", token});
-   }catch(error){
-res.status(500).json({message:"Login error"})
-   }
+   }catch (error) {
+  console.log(error);
+  res.status(500).json({
+    success: false,
+    message: error.message
+  });
+}
+
 };
 
 
