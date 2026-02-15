@@ -4,7 +4,7 @@ import Navbar from '../components/common/Navbar';
 function Root() {
   return (
     <div>
-<Navbar />
+<Navbar  />
     <Outlet /> 
     </div>
   )

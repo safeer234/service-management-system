@@ -5,25 +5,25 @@ import { NavLink } from 'react-router-dom';
 function Navbar() {
       const [isOpen, setIsOpen] = useState(false);
   return (
-    <div>
+    <div >
         {/* header */}
       <header>
-        <nav className=' flex justify-between  items-center px-10 py-5'>
+        <nav className='flex justify-between  items-center px-10 py-5'>
             {/* logo */}
             <NavLink to="/home" className="text-2xl font-medium ">
-                ServiceHub
+                Service<span className='text-[#ea580c]'>Hub</span>
             </NavLink>
             {/* desktop Menu */}
             <ul className='hidden  lg:items-center lg:flex gap-6 '>
-                <li><NavLink to="/home">Home</NavLink></li>
-                <li><NavLink to="/services">Services</NavLink></li>
-                <li><NavLink to="/about">About</NavLink></li>
-                <li><NavLink to="/contact">Contact</NavLink></li>
+                <li className='font-medium hover:text-[#ea580c]'><NavLink to="/home">Home</NavLink></li>
+                <li className='font-medium hover:text-[#ea580c]'><NavLink to="/services">Services</NavLink></li>
+                <li className='font-medium hover:text-[#ea580c]'><NavLink to="/about">About</NavLink></li>
+                <li className='font-medium hover:text-[#ea580c]'><NavLink to="/contact">Contact</NavLink></li>
             </ul>
             {/* desktop login/signup */}
             <ul className='hidden lg:flex'>
-                <li>Login</li>
-                <li>Signup</li>
+                <li className='font-medium'>Login</li>
+                <li className='font-medium'>Signup</li>
             </ul>
 
             {/* mobile hamburger button */}
