@@ -1,5 +1,6 @@
 import express from "express";
 import {
+   createPayment,
   getPaymentByRequest,
   markPaymentAsPaid,
   getAllPayments
@@ -15,8 +16,15 @@ const router = express.Router();
  * GET /api/payment/request/:requestId
  * Accessible by Client or Admin
  */
+
+
+
+router.post("/create", createPayment);
+
 router.get(
   "/request/:requestId",
+  isClient,
+  isAdmin,
   protect,
   getPaymentByRequest
 );

@@ -14,7 +14,8 @@ export const createService = async (req, res) => {
       category,
       price,
       image,
-      isPopular,
+      isPopular
+     
     });
 
     res.status(201).json({

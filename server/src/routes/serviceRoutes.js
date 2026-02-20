@@ -32,7 +32,7 @@ router.get("/:id", getSingleService);
  */
 
 // Create service
-router.post("/", protect, isAdmin, createService);
+router.post("/create", protect, isAdmin, createService);
 
 // Update service
 router.put("/:id", protect, isAdmin, updateService);

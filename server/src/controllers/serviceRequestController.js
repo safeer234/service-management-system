@@ -7,9 +7,8 @@ export const createServiceRequest = async (req, res) => {
       serviceAddress,
       preferredDate,
       estimatedPrice,
-      description,
-      status,
-      provider
+      description
+     
     } = req.body;
 
     const serviceRequest = await ServiceRequest.create({
@@ -18,9 +17,8 @@ export const createServiceRequest = async (req, res) => {
       serviceAddress,
       preferredDate,
       estimatedPrice,
-      description,
-      status,
-      provider
+      description
+     
     });
 
     res.status(201).json({

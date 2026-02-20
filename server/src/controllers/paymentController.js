@@ -1,6 +1,63 @@
 import Payment from "../models/Payment.js";
 import ServiceRequest from "../models/ServiceRequests.js";
 
+
+/**
+ * @desc   Create payment for a service request
+ * @route  POST /api/payment/create
+ */
+export const createPayment = async (req, res) => {
+  try {
+    const { serviceRequestId, amount } = req.body;
+
+    // Check if request exists
+    const request = await ServiceRequest.findById(serviceRequestId);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Service request not found"
+      });
+    }
+
+    // Check if payment already exists
+    const existingPayment = await Payment.findOne({
+      serviceRequest: serviceRequestId
+    });
+
+    if (existingPayment) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment already created for this request"
+      });
+    }
+
+    const payment = await Payment.create({
+      serviceRequest: serviceRequestId,
+      client: request.client,
+      provider: request.provider,
+      amount,
+      status: "pending"
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Payment created successfully",
+      data: payment
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create payment"
+    });
+  }
+};
+
+
+
+
 /**
  * @desc   Get payment details for a service request
  * @route  GET /api/payment/:requestId
