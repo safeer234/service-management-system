@@ -22,6 +22,7 @@ function Navbar() {
                 <li className='font-medium hover:text-[#ea580c]'><NavLink to="/contact">Contact</NavLink></li>
             </ul>
             {/* desktop login/signup */}
+            
             <ul className='hidden lg:flex gap-3'>
               <Link to="/login"> <li className='font-medium border-2 border-[#ea580c] rounded-3xl flex justify-center items-center w-20 h-8 text-[#ea580c] cursor-pointer hover:scale-104 transition duration-300'>Login</li></Link>
                <Link to="/signup"> <li className='font-medium bg-[#ea580c] rounded-3xl flex justify-center items-center w-20 h-8 text-white hover:scale-104 transition duration-300  cursor-pointer'>SignUp</li></Link>

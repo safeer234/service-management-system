@@ -1,7 +1,67 @@
 import React from 'react'
 import loginimg from "../assets/images/login image/repair-services-for-equipment-vehicles-and-home-maintenance.png" 
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../features/auth/authSlice';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 function Login() {
+  const navigate = useNavigate();
+
+const [formData, setFormData] = useState({
+  email: "",
+  password: ""
+});
+
+const [error, setError] = useState("");
+const [loading, setLoading] = useState(false);
+
+const dispatch = useDispatch();
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+    setError("");
+
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      formData,
+      { withCredentials: true }
+    );
+
+    dispatch(loginSuccess(res.data.user));
+
+    // Redirect based on role
+    const role = res.data.user.role;
+
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (role === "provider") {
+      navigate("/provider/dashboard");
+    } else {
+      navigate("/");
+    }
+
+  } catch (err) {
+    setError(
+      err.response?.data?.message || "Login failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+// const handleChange = (e) => {
+//   setFormData({
+//     ...formData,
+//     [e.target.placeholder.toLowerCase()]: e.target.value
+//   });
+// };
+  
+
   return (
     <div className='flex justify-center h-screen items-center'>
       <div className=' flex  w-200 h-100  shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
@@ -22,7 +82,7 @@ function Login() {
               {/* email and pass div */}
               <div className=' px-10'>
                 
-              <form className='mb-6' action="">
+              <form className='mb-6' onSubmit={handleLogin}  action="">
                 {/* email div */}
                 <div className='flex mb-6 gap-2 border-b-2 border-[#a3a3a3]'>
                     <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
@@ -31,7 +91,14 @@ fill="#ea580c" viewBox="0 0 24 24" >
 <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m-8.61 10.79c.18.14.4.21.61.21s.43-.07.61-.21l1.55-1.21L18.58 18H5.41l4.42-4.42 1.55 1.21ZM20 6v.51l-8 6.22-8-6.22V6zm0 3.04v7.54l-4.24-4.24zm-11.76 3.3L4 16.58V9.04zM20 18"></path>
 </svg>
 
-                    <input className='w-70' type="text" placeholder='Email' />
+                    <input
+                     className='w-70'
+                      type="email" 
+                      name="email"
+                      value={formData.email}
+                      onChange={(e)=> setFormData({ ...formData, email: e.target.value})}
+                      placeholder='Email'
+                       />
                 </div>
 
 
@@ -43,7 +110,12 @@ fill="#ea580c" viewBox="0 0 24 24" >
 <path d="M6 22h12c1.1 0 2-.9 2-2v-9c0-1.1-.9-2-2-2h-1V7c0-2.76-2.24-5-5-5S7 4.24 7 7v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M9 7c0-1.65 1.35-3 3-3s3 1.35 3 3v2H9zm-3 4h12v9H6z"></path>
 </svg>
 
-                    <input type="text" placeholder='Password' />
+                    <input
+                     type="password"
+                     name="password"
+                     value={formData.password}
+                      placeholder='Password'
+                      onChange={(e)=> setFormData({ ...formData, password:e.target.value})} />
                 </div>
                 {/* remember and forget pass div */}
 
@@ -77,8 +149,13 @@ fill="#ea580c" viewBox="0 0 24 24" >
                 </div>
 
                 <div className='flex justify-center h-9 rounded   bg-[#ea580c]  '>
-                    <button className='text-white'>Log In</button>
+                    <button className='text-white'>{loading ? "Logging in..." : "Log In"}</button>
                 </div>
+
+
+                {error && (
+  <p className="text-red-500 text-center mt-2">{error}</p>
+)}
 
                 
 
