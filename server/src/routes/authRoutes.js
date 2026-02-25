@@ -2,6 +2,7 @@ import express from "express";
 import {
   signup,
   login,
+  logout,
   getLoggedInUser
 } from "../controllers/authController.js";
 
@@ -25,6 +26,13 @@ router.post("/login", login);
  * Get logged-in user profile
  * GET /api/auth/me
  */
+
+router.post("/logout", logout);
+
+router.post("/logout", protect, logout);
+
+
+
 router.get("/me", protect, getLoggedInUser);
 
 export default router;

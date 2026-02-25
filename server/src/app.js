@@ -10,12 +10,12 @@ import serviceRoutes from "./routes/serviceRoutes.js";
 const app = express();
 
 
+app.use(cors({
+  origin: true,  // allow all localhost ports
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: "http://localhost:5173",
-    credentials:true
-}))
 
 // routes
 
