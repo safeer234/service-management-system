@@ -11,11 +11,13 @@ const app = express();
 
 
 app.use(cors({
-  origin: true,  // allow all localhost ports
+  origin: "http://localhost:5175",  // allow all localhost ports
   credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(express.urlencoded({ extended: true }));
 
 // routes
 

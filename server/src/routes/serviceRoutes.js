@@ -1,4 +1,5 @@
 import express from "express";
+import upload from "../middleware/upload.js";
 import {
   createService,
   getAllServices,
@@ -32,7 +33,7 @@ router.get("/:id", getSingleService);
  */
 
 // Create service
-router.post("/create", protect, isAdmin, createService);
+router.post("/create", protect, isAdmin,  upload.single("image"), createService);
 
 // Update service
 router.put("/:id", protect, isAdmin, updateService);

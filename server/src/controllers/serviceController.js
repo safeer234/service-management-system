@@ -1,35 +1,55 @@
 import Service from "../models/Service.js";
-
+import cloudinary from "../config/cloudinary.js";
 /**
  * @desc    Create new service (Admin only)
  * @route   POST /api/services
  */
 export const createService = async (req, res) => {
   try {
-    const { name, description, category, price, image, isPopular } = req.body;
+     console.log("FILE:", req.file);
+    console.log("BODY:", req.body);
+    let { name, description, price, category, isPopular } = req.body;
+
+    // 🔥 Convert properly
+    isPopular = isPopular === "true";
+
+    price = Number(price);
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "services",
+    });
 
     const service = await Service.create({
       name,
       description,
-      category,
       price,
-      image,
-      isPopular
-     
+      category,
+      isPopular,
+      image: result.secure_url,
     });
 
     res.status(201).json({
       success: true,
-      message: "Service created successfully",
       data: service,
     });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to create service",
-    });
-  }
+  console.error("FULL ERROR OBJECT:");
+  console.error(error);
+  console.error("MESSAGE:", error.message);
+  console.error("STACK:", error.stack);
+
+  res.status(500).json({
+    message: error.message,
+  });
+}
 };
 
 
