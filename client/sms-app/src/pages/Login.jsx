@@ -38,9 +38,9 @@ const handleLogin = async (e) => {
     const role = res.data.user.role;
 
     if (role === "admin") {
-      navigate("/admin/dashboard");
+      navigate("/admin");
     } else if (role === "provider") {
-      navigate("/provider/dashboard");
+      navigate("/provider");
     } else {
       navigate("/");
     }
@@ -164,7 +164,7 @@ fill="#ea580c" viewBox="0 0 24 24" >
                 
               </form>
               <div className='text-center'>
-                <p className='text-[#ea580c] '>Don't have an account? <Link to="/signup"><span className='font-semibold'>Sign Up</span></Link> </p>
+                <p className='text-[#ea580c] '>Don't have an account? <Link to="/auth/signup"><span className='font-semibold'>Sign Up</span></Link> </p>
               </div>
           
 

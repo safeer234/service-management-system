@@ -1,5 +1,5 @@
 import React from 'react'
-import loginimg from "../assets/images/login image/repair-services-for-equipment-vehicles-and-home-maintenance.png" 
+import signupimg from "../assets/images/signup img/packing-and-moving-services.png" 
 import { Link } from 'react-router-dom'
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -54,10 +54,10 @@ const handleChange = (e) => {
 
   return (
     <div className='flex justify-center h-screen items-center'>
-      <div className=' flex  w-200 h-110  shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
+      <div className=' flex  w-200 h-120  shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
 {/* img div */}
         <div>
-            <img className='h-100 ' src={loginimg} alt="" />
+            <img className='h-100 ' src={signupimg} alt="" />
 
         </div>
         {/* content div */}
@@ -86,7 +86,8 @@ fill="#ea580c" viewBox="0 0 24 24" >
                      name="username"
                      value={formData.username}
                      onChange={handleChange}
-                      placeholder='Username' />
+                      placeholder='Username'
+                       />
                 </div>
 
 
@@ -197,7 +198,7 @@ fill="#ea580c" viewBox="0 0 24 24" >
                 
               </form>
               <div className='text-center'>
-                <p className='text-[#ea580c] '>Already have an account? <Link to="/login"><span className='font-semibold'>Log In</span></Link> </p>
+                <p className='text-[#ea580c] '>Already have an account? <Link to="/auth/login"><span className='font-semibold'>Log In</span></Link> </p>
               </div>
           
 

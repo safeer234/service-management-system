@@ -1,7 +1,9 @@
 import React from 'react'
 import heroimg from "../assets/images/heroimage/renovation-and-decoration-of-room.png"
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 function LandingPage() {
+        const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
   return (
     <div>
    <section className='h-screen  mx-auto px-4 py-10 lg:py-20'>
@@ -15,10 +17,23 @@ function LandingPage() {
 
         <p className='font-medium text-xl'>Connect with trusted experts for all your home and business needs. <br />
 Book reliable services quickly, securely, and with confidence.</p>
-<div className='flex gap-3  py-10'>
+
+{!isAuthenticated ?(
+  <div className='flex gap-3  py-10'>
+  
+        <Link to="/auth/login" className='bg-[#ea580c] rounded-3xl text-white w-30 h-10 flex items-center justify-center text-lg duration-300 ease-in hover:bg-white hover:border-2 hover:border-[#ea580c] hover:text-[#ea580c]'>Contact</Link>
+     <Link to="/auth/login"  className='border-2 border-[#ea580c] rounded-3xl text-[#ea580c] w-30 h-10 flex items-center justify-center duration-300 ease-out text-lg hover:bg-[#ea580c]  hover:text-white'>Book Service </Link>
+      </div>
+
+):(
+  <div className='flex gap-3  py-10'>
+  
         <Link to="/contact" className='bg-[#ea580c] rounded-3xl text-white w-30 h-10 flex items-center justify-center text-lg duration-300 ease-in hover:bg-white hover:border-2 hover:border-[#ea580c] hover:text-[#ea580c]'>Contact</Link>
      <Link to="/services"  className='border-2 border-[#ea580c] rounded-3xl text-[#ea580c] w-30 h-10 flex items-center justify-center duration-300 ease-out text-lg hover:bg-[#ea580c]  hover:text-white'>Book Service </Link>
       </div>
+)}
+
+
 
       </div>
 
