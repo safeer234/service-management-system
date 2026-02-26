@@ -3,6 +3,7 @@ import axios from "axios";
 function AddService() {
   
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     image:"",
     name:"",
@@ -25,6 +26,8 @@ function AddService() {
   }
 
    try {
+    setError("");
+    setLoading(true);
     const data = new FormData();
 
     data.append("image", formData.image);
@@ -40,11 +43,16 @@ console.log(formData.image);
       data,
     
         {withCredentials: true,}
+        
       
     );
+     alert("Service added successfully");
+
 
   } catch (err) {
     setError(err.response?.data?.message || "adding failed");
+  }finally {
+    setLoading(false);
   }
   }
 
@@ -155,7 +163,7 @@ fill="#ea580c" viewBox="0 0 24 24" >
         </div>
 
         <div>
-          <button className='bg-[#ea580c] w-20 h-8 text-white rounded'>Add</button>
+          <button disabled={loading} className='bg-[#ea580c] w-20 h-8 text-white rounded'>{loading ? "Adding..." : "Add"}</button>
         </div>
 
                         {error && (
