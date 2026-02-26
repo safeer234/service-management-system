@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 
-export const protect = async (req, res, next) => {
-  console.log("DECODED USER:", decoded);
+export const protect = (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({
@@ -23,6 +22,4 @@ export const protect = async (req, res, next) => {
       message: "Token invalid",
     });
   }
-  console.log(req.cookies);
-
 };
