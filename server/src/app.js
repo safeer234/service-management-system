@@ -11,7 +11,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: "http://localhost:5175",  // allow all localhost ports
+  origin: true,  // allow all localhost ports
   credentials: true
 }));
 app.use(express.json());
