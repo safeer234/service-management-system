@@ -17,7 +17,7 @@ function Navbar() {
       <div className='shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
         <div className='flex justify-between  items-center px-10 py-5'>
             {/* logo */}
-            <NavLink to="/home" className="text-2xl font-medium ">
+            <NavLink to="/admin/dashboard" className="text-2xl font-medium ">
                 Service<span className='text-[#ea580c]'>Hub</span>
             </NavLink>
             {/* desktop Menu */}
