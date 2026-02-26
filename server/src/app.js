@@ -10,8 +10,19 @@ import serviceRoutes from "./routes/serviceRoutes.js";
 const app = express();
 
 
+const allowedOrigins = [
+  "http://localhost:5176",
+  "https://service-management-system-gray.vercel.app"
+];
+
 app.use(cors({
-  origin: "https://service-management-system-gray.vercel.app",  // allow all localhost ports
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
