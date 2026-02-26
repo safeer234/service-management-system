@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const protect = async (req, res, next) => {
+  console.log("DECODED USER:", decoded);
   try {
     const token = req.cookies?.token;
 

@@ -11,7 +11,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: true,  // allow all localhost ports
+  origin: "https://service-management-system-gray.vercel.app",  // allow all localhost ports
   credentials: true
 }));
 app.use(express.json());
