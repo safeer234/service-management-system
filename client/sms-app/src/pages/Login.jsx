@@ -54,12 +54,12 @@ const handleLogin = async (e) => {
   }
 };
 
-// const handleChange = (e) => {
-//   setFormData({
-//     ...formData,
-//     [e.target.placeholder.toLowerCase()]: e.target.value
-//   });
-// };
+ const handleChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.placeholder.toLowerCase()]: e.target.value
+   });
+ };
   
 
   return (
@@ -96,7 +96,7 @@ fill="#ea580c" viewBox="0 0 24 24" >
                       type="email" 
                       name="email"
                       value={formData.email}
-                      onChange={(e)=> setFormData({ ...formData, email: e.target.value})}
+                      onChange={handleChange}
                       placeholder='Email'
                        />
                 </div>
@@ -115,7 +115,7 @@ fill="#ea580c" viewBox="0 0 24 24" >
                      name="password"
                      value={formData.password}
                       placeholder='Password'
-                      onChange={(e)=> setFormData({ ...formData, password:e.target.value})} />
+                      onChange={handleChange} />
                 </div>
                 {/* remember and forget pass div */}
 
