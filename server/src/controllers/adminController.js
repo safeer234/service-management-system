@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import ProviderProfile from "../models/ProviderProfile.js";
 import ServiceRequest from "../models/ServiceRequests.js";
 import Payment from "../models/Payment.js";
+import Service from "../models/Service.js";
 
 /**
  * @desc   Get admin dashboard summary
@@ -13,6 +14,9 @@ export const getAdminDashboard = async (req, res) => {
     const totalProviders = await ProviderProfile.countDocuments();
     const totalRequests = await ServiceRequest.countDocuments();
     const totalPayments = await Payment.countDocuments({ status: "paid" });
+    const totalService = await Service.countDocuments();
+    
+
 
     res.status(200).json({
       success: true,
@@ -20,7 +24,9 @@ export const getAdminDashboard = async (req, res) => {
         totalUsers,
         totalProviders,
         totalRequests,
-        totalPayments
+        totalPayments,
+        totalService
+      
       }
     });
   } catch (error) {
