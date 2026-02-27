@@ -95,6 +95,12 @@ export const getLoggedInUser = async (req, res) => {
 };
 
 
+
+
+
+
+
+
 export const logout = (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,

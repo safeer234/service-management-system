@@ -3,7 +3,8 @@ import {
   getAdminDashboard,
   getAllProviders,
   updateProviderStatus,
-  getAllServiceRequests
+  getAllServiceRequests,
+  getAllUsers
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -34,5 +35,11 @@ router.put("/providers/:id", protect, isAdmin, updateProviderStatus);
  * GET /api/admin/requests
  */
 router.get("/requests", protect, isAdmin, getAllServiceRequests);
+
+
+router.get("/users", protect, isAdmin, getAllUsers);
+
+
+router.delete("/users/:id", protect, isAdmin, deleteUser);
 
 export default router;
