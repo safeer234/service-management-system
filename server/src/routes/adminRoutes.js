@@ -4,7 +4,8 @@ import {
   getAllProviders,
   updateProviderStatus,
   getAllServiceRequests,
-  getAllUsers
+  getAllUsers,
+  deleteUser
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
