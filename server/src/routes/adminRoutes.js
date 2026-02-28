@@ -5,7 +5,8 @@ import {
   updateProviderStatus,
   getAllServiceRequests,
   getAllUsers,
-  deleteUser
+  deleteUser,
+  cancelServiceRequest
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -39,6 +40,8 @@ router.get("/requests", protect, isAdmin, getAllServiceRequests);
 
 
 router.get("/users", protect, isAdmin, getAllUsers);
+
+router.delete("/request/:id", protect, isAdmin, cancelServiceRequest);
 
 
 router.delete("/users/:id", protect, isAdmin, deleteUser);

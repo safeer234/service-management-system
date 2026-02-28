@@ -144,3 +144,58 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+
+export const cancelServiceRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const booking = await ServiceRequest.findById(id);
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    // Prevent cancelling completed booking
+    if (booking.status === "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot cancel a completed booking",
+      });
+    }
+
+    // If already cancelled
+    if (booking.status === "cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Booking already cancelled",
+      });
+    }
+
+    booking.status = "cancelled";
+    booking.cancelledBy = "admin"; // optional field (recommended)
+    booking.cancelledAt = new Date();
+
+    await booking.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Booking cancelled successfully",
+      data: booking,
+    });
+
+  } catch (error) {
+    console.error("Admin Cancel Booking Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to cancel booking",
+    });
+  }
+};
+
+
+
