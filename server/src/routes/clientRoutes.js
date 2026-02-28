@@ -26,6 +26,6 @@ router.get("/requests", protect, isClient, getMyServiceRequests);
  * Cancel a service request
  * PUT /api/client/request/:id/cancel
  */
-router.put("/request/:id/cancel", protect, isClient, cancelServiceRequest);
+router.put("/request/:id", protect, isClient, cancelServiceRequest);
 
 export default router;
