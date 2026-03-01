@@ -4,7 +4,8 @@ import {
   acceptServiceRequest,
   getMyRequests,
   completeService,
-  getProviderEarnings
+  getProviderEarnings,
+  getProviderDashboard
 } from "../controllers/providerController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -66,5 +67,7 @@ router.get(
   isProvider,
   getProviderEarnings
 );
+
+router.get("/dashboard", protect, isProvider, getProviderDashboard);
 
 export default router;

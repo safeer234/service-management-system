@@ -164,3 +164,65 @@ export const getProviderEarnings = async (req, res) => {
     });
   }
 };
+
+
+import ServiceRequest from "../models/ServiceRequest.js";
+import Payment from "../models/Payment.js";
+
+export const getProviderDashboard = async (req, res) => {
+  try {
+    const providerId = req.user.id;
+
+    const totalRequests = await ServiceRequest.countDocuments({
+      provider: providerId,
+    });
+
+    const pendingRequests = await ServiceRequest.countDocuments({
+      provider: providerId,
+      status: "pending",
+    });
+
+    const completedRequests = await ServiceRequest.countDocuments({
+      provider: providerId,
+      status: "completed",
+    });
+
+    const earnings = await Payment.aggregate([
+      {
+        $match: {
+          provider: providerId,
+          status: "paid",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const recentRequests = await ServiceRequest.find({
+      provider: providerId,
+    })
+      .populate("user", "username email")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalRequests,
+        pendingRequests,
+        completedRequests,
+        totalEarnings: earnings[0]?.total || 0,
+        recentRequests,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch provider dashboard",
+    });
+  }
+};
