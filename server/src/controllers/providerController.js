@@ -1,6 +1,7 @@
 import ServiceRequest from "../models/ServiceRequests.js";
-import ProviderProfile from "../models/ProviderProfile.js";
+import Provider from "../models/ProviderProfile.js";
 import Payment from "../models/Payment.js";
+
 
 /**
  * @desc   Get service requests available for provider
@@ -9,7 +10,7 @@ import Payment from "../models/Payment.js";
 export const getAvailableRequests = async (req, res) => {
   try {
     // Get provider profile
-    const providerProfile = await ProviderProfile.findOne({
+    const providerProfile = await Provider.findOne({
       user: req.user.id,
       verificationStatus: "approved",
       availability: true

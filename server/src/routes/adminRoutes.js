@@ -6,7 +6,11 @@ import {
   getAllServiceRequests,
   getAllUsers,
   deleteUser,
-  cancelServiceRequest
+  cancelServiceRequest,
+   getPendingProviders,
+    approveProvider,
+    rejectProvider
+
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -45,5 +49,27 @@ router.delete("/request/:id", protect, isAdmin, cancelServiceRequest);
 
 
 router.delete("/users/:id", protect, isAdmin, deleteUser);
+
+
+router.get(
+  "/providers/pending",
+  protect,
+  isAdmin,
+  getPendingProviders
+);
+
+router.put(
+  "/provider/approve/:id",
+  protect,
+  isAdmin,
+  approveProvider
+);
+
+router.put(
+  "/provider/reject/:id",
+  protect,
+  isAdmin,
+  rejectProvider
+);
 
 export default router;

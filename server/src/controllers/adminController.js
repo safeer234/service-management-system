@@ -198,4 +198,76 @@ export const cancelServiceRequest = async (req, res) => {
 };
 
 
+export const getPendingProviders = async (req, res) => {
+  try {
+    const providers = await Provider.find({
+      verificationStatus: "pending"
+    }).populate("user", "username email phone");
 
+    res.status(200).json({
+      success: true,
+      data: providers
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch providers"
+    });
+  }
+};
+
+/* ================= APPROVE PROVIDER ================= */
+
+export const approveProvider = async (req, res) => {
+  try {
+    const provider = await Provider.findByIdAndUpdate(
+      req.params.id,
+      { verificationStatus: "approved" },
+      { new: true }
+    );
+
+    if (!provider) {
+      return res.status(404).json({
+        success: false,
+        message: "Provider not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Provider approved successfully",
+      provider
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error approving provider"
+    });
+  }
+};
+
+/* ================= REJECT PROVIDER ================= */
+
+export const rejectProvider = async (req, res) => {
+  try {
+    const provider = await Provider.findByIdAndUpdate(
+      req.params.id,
+      { verificationStatus: "rejected" },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Provider rejected",
+      provider
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error rejecting provider"
+    });
+  }
+};
