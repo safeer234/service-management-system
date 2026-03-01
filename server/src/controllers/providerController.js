@@ -24,9 +24,11 @@ export const getAvailableRequests = async (req, res) => {
 
     // Find pending requests matching provider services
     const requests = await ServiceRequest.find({
-      serviceType: { $in: providerProfile.services },
-      status: "pending"
-    }).populate("client", "name email");
+  status: "pending",
+  serviceType: {
+    $in: providerProfile.services.map(s => new RegExp(`^${s}$`, "i"))
+  }
+}).populate("client", "name email");
 
     res.status(200).json({
       success: true,
