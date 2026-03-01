@@ -166,8 +166,7 @@ export const getProviderEarnings = async (req, res) => {
 };
 
 
-import ServiceRequest from "../models/ServiceRequest.js";
-import Payment from "../models/Payment.js";
+
 
 export const getProviderDashboard = async (req, res) => {
   try {
