@@ -1,218 +1,224 @@
-import React from 'react'
-import signupimg from "../assets/images/signup img/packing-and-moving-services.png" 
-import { Link } from 'react-router-dom'
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import signupimg from "../assets/images/signup img/packing-and-moving-services.png";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Signup() {
-
   const navigate = useNavigate();
 
-const [formData, setFormData] = useState({
-  username: "",
-  phone: "",
-  email: "",
-  password: "",
-  role: "client",
-});
-
-const [error, setError] = useState("");
-const [loading, setLoading] = useState(false);
-
-const handleSignup = async (e) => {
-  e.preventDefault();
-
-  try {
-    setLoading(true);
-    setError("");
-
-    await axios.post(
-      "https://service-management-system-hj06.onrender.com/api/auth/signup",
-      formData,
-      { withCredentials: true }
-    );
-
-    // After successful signup redirect to login
-    navigate("/login");
-
-  } catch (err) {
-    setError(
-      err.response?.data?.message || "Signup failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
+  const [formData, setFormData] = useState({
+    username: "",
+    phone: "",
+    email: "",
+    password: "",
+    role: "client",
+    services: [],
+    serviceArea: "",
   });
-};
 
+  const [customService, setCustomService] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleServiceChange = (e) => {
+    const selected = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+
+    if (selected.includes("Other")) {
+      setShowCustomInput(true);
+    } else {
+      setShowCustomInput(false);
+      setCustomService("");
+    }
+
+    const filtered = selected.filter((s) => s !== "Other");
+
+    setFormData({
+      ...formData,
+      services: filtered,
+    });
+  };
+
+  const addCustomService = () => {
+    if (!customService.trim()) return;
+
+    setFormData({
+      ...formData,
+      services: [...formData.services, customService.trim()],
+    });
+
+    setCustomService("");
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      setError("");
+
+      await axios.post(
+        "https://service-management-system-hj06.onrender.com/api/auth/signup",
+        formData,
+        { withCredentials: true }
+      );
+
+      navigate("/auth/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className='flex justify-center h-screen items-center'>
-      <div className=' flex  w-200 h-120  shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
-{/* img div */}
-        <div>
-            <img className='h-100 ' src={signupimg} alt="" />
+    <div className="flex justify-center h-screen items-center">
+      <div className="flex w-200 shadow-lg">
 
+        {/* Image */}
+        <div>
+          <img className="h-100" src={signupimg} alt="signup" />
         </div>
-        {/* content div */}
 
+        {/* Form */}
+        <div className="p-8 w-full">
+          <h1 className="text-2xl font-semibold mb-6">
+            Sign <span className="text-orange-600">Up</span>
+          </h1>
 
-        <div>
-            
-              <div className='px-35 py-10 font-medium text-2xl'>
-                <h1 className=''>Sign <span className='text-[#ea580c]'>Up</span></h1>
-              </div>
+          <form onSubmit={handleSignup}>
 
-              {/* email and pass div */}
-              <div className=' px-10'>
-                
-              <form className='mb-6' onSubmit={handleSignup} action="">
-                {/* username div */}
-                <div className='flex mb-4 gap-2 border-b-2 border-[#a3a3a3]'>
-                    <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-fill="#ea580c" viewBox="0 0 24 24" >
+            <input
+              className="w-full mb-4 border-b-2 p-2 outline-none"
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
 
-<path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5m0-8c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3M4 22h16c.55 0 1-.45 1-1v-1c0-3.86-3.14-7-7-7h-4c-3.86 0-7 3.14-7 7v1c0 .55.45 1 1 1m6-7h4c2.76 0 5 2.24 5 5H5c0-2.76 2.24-5 5-5"></path>
-</svg>
+            <input
+              className="w-full mb-4 border-b-2 p-2 outline-none"
+              type="text"
+              name="phone"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
 
-                    <input className='w-70'
-                     type="text"
-                     name="username"
-                     value={formData.username}
-                     onChange={handleChange}
-                      placeholder='Username'
-                       />
-                </div>
+            <input
+              className="w-full mb-4 border-b-2 p-2 outline-none"
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
 
+            <input
+              className="w-full mb-4 border-b-2 p-2 outline-none"
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
 
-                  {/* phone number div */}
-                <div className='flex gap-2 mb-4 border-b-2 border-[#a3a3a3]'>
-     <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-fill="#ea580c" viewBox="0 0 24 24" >
+            <select
+              className="w-full mb-4 p-2 border"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="client">Client</option>
+              <option value="provider">Provider</option>
+            </select>
 
-<path d="M7 22h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2M7 4h10v16H7z"></path><path d="M12 17a1 1 0 1 0 0 2 1 1 0 1 0 0-2"></path>
-</svg>
-
-                    <input 
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                     placeholder='Phone Number' />
-                </div>
-
-
-                   {/* email div */}
-                <div className='flex gap-2 mb-4 border-b-2 border-[#a3a3a3]'>
-                  <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-fill="#ea580c" viewBox="0 0 24 24" >
-
-<path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 2v.51l-8 6.22-8-6.22V6zM4 18V9.04l7.39 5.74c.18.14.4.21.61.21s.43-.07.61-.21L20 9.03v8.96H4Z"></path>
-</svg>
-
-                    <input
-                     type="text"
-                     name='email'
-                     value={formData.email}
-                     onChange={handleChange}
-                      placeholder='Email' />
-                </div>
-
-
-
-
-
-                   {/* password div */}
-                <div className='flex gap-2 mb-2 border-b-2 border-[#a3a3a3]'>
-                   <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-fill="#ea580c" viewBox="0 0 24 24" >
-
-<path d="M6 22h12c1.1 0 2-.9 2-2v-9c0-1.1-.9-2-2-2h-1V7c0-2.76-2.24-5-5-5S7 4.24 7 7v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M9 7c0-1.65 1.35-3 3-3s3 1.35 3 3v2H9zm-3 4h12v9H6z"></path>
-</svg>
-
-                    <input
-                     type="text"
-                     name='password'
-                     value={formData.password}
-                     onChange={handleChange}
-                      placeholder='Password' />
-                </div>
-
-
-                <select className='mb-2' value={formData.role} onChange={handleChange} name="role" id="">
-                
-                  <option value="client">Client</option>
-                  <option value="provider">provider</option>
+            {/* Provider Fields */}
+            {formData.role === "provider" && (
+              <>
+                <select
+                  multiple
+                  className="w-full border p-2 mb-3 h-32"
+                  onChange={handleServiceChange}
+                >
+                  <option value="Plumber">Plumber</option>
+                  <option value="Electrician">Electrician</option>
+                  <option value="Carpenter">Carpenter</option>
+                  <option value="Painter">Painter</option>
+                  <option value="Cleaning">Cleaning</option>
+                  <option value="Other">Other</option>
                 </select>
 
+                {showCustomInput && (
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={customService}
+                      onChange={(e) => setCustomService(e.target.value)}
+                      placeholder="Enter custom service"
+                      className="border p-2 flex-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={addCustomService}
+                      className="bg-orange-600 text-white px-3 rounded"
+                    >
+                      Add
+                    </button>
+                  </div>
+                )}
 
+                <input
+                  type="text"
+                  name="serviceArea"
+                  placeholder="Service Area (City)"
+                  value={formData.serviceArea}
+                  onChange={handleChange}
+                  className="w-full border p-2 mb-3"
+                  required
+                />
+              </>
+            )}
 
+            <button
+              type="submit"
+              className="w-full bg-orange-600 text-white py-2 rounded"
+            >
+              {loading ? "Signing up..." : "Sign Up"}
+            </button>
 
+            {error && (
+              <p className="text-red-500 text-center mt-3">{error}</p>
+            )}
+          </form>
 
-
-
-
-
-                {/* remember and forget pass div */}
-
-                <div className='flex'>
-                    {/* remember */}
-
-                    <div className='flex gap-2 mb-6'>
-                       <input type="checkbox" />
-
-                       <div className='flex gap-22'>
-                        <div>
-                          <p className='text-sm text-[#ea580c]'>I agree to terms and conditions</p>
-
-                       </div>
-                   
-
-
-
-                       </div>
-
-                       
-                     
-                      
-                    </div>
-                  
-                </div>
-
-                <div className='flex justify-center h-9 rounded   bg-[#ea580c]  '>
-                    <button className='text-white'> {loading ? "Signing up..." : "Sign Up"}</button>
-                </div>
-
-                {error && (
-  <p className="text-red-500 text-center mt-2">{error}</p>
-)}
-
-            
-
-                
-              </form>
-              <div className='text-center'>
-                <p className='text-[#ea580c] '>Already have an account? <Link to="/auth/login"><span className='font-semibold'>Log In</span></Link> </p>
-              </div>
-          
-
-
-
-              </div>
-
-
-
+          <p className="text-center mt-4 text-orange-600">
+            Already have an account?{" "}
+            <Link to="/auth/login" className="font-semibold">
+              Log In
+            </Link>
+          </p>
         </div>
-
       </div>
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;

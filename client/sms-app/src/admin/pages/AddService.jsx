@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import axios from "axios";
 function AddService() {
-  
+  const fileInputRef = useRef();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,6 +47,15 @@ console.log(formData.image);
       
     );
      alert("Service added successfully");
+     setFormData({
+  image: "",
+  name: "",
+  description: "",
+  price: "",
+  category: "",
+  isPopular: "false"
+});
+
 
 
   } catch (err) {
@@ -78,6 +87,7 @@ fill="#ea580c" viewBox="0 0 24 24" >
 </svg>
             </label>
             <input 
+              ref={fileInputRef}
             type="file"
             name="image"
            

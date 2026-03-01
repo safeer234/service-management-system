@@ -2,10 +2,10 @@ import React from 'react'
 import { useState } from 'react';
 import { useSelector,useDispatch} from 'react-redux';
 import { Menu, X } from 'lucide-react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { logout } from '../../features/auth/authSlice';
-import Sidebar from '../../provider/components/Sidebar';
+
 
 function Navbar() {
     const dispatch = useDispatch();
@@ -74,12 +74,12 @@ function Navbar() {
       
       <main>
         <div className='z-10 absolute px-90    '>
-             <Outlet />
+             
         </div>
        <div>
         
        </div>
-      <Sidebar />
+     
         
        
        

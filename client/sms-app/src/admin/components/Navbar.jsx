@@ -2,12 +2,13 @@ import React from 'react'
 import { useState } from 'react';
 import { useSelector,useDispatch} from 'react-redux';
 import { Menu, X } from 'lucide-react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { logout } from '../../features/auth/authSlice';
-import Sidebar from '../../admin/components/Sidebar';
+
 
 function Navbar() {
+   
     const dispatch = useDispatch();
       const [isOpen, setIsOpen] = useState(false);
       const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
@@ -74,12 +75,12 @@ function Navbar() {
       
       <main>
         <div className='z-10 absolute px-90    '>
-             <Outlet />
+            
         </div>
        <div>
         
        </div>
-      <Sidebar />
+    
         
        
        
