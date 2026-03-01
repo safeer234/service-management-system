@@ -7,6 +7,8 @@ export const signup = async (req, res) => {
   try {
     const { username, email, password, role, phone, services } = req.body;
 
+    console.log("Incoming role:", role);
+
     const exist = await User.findOne({ email });
     if (exist)
       return res.status(400).json({ message: "User already exists" });
@@ -21,17 +23,22 @@ export const signup = async (req, res) => {
       role: role || "client",
     });
 
-    // ✅ VERY IMPORTANT FIX
+    console.log("Saved user role:", user.role);
+
     if (user.role === "provider") {
+      console.log("Provider condition matched ✅");
+
       await Provider.create({
         user: user._id,
-        services: services && services.length > 0 ? services : [],
+        services: services || [],
         verificationStatus: "pending",
         availability: true,
         completedJobs: 0,
       });
 
-      console.log("Provider created successfully");
+      console.log("Provider created successfully ✅");
+    } else {
+      console.log("Provider condition NOT matched ❌");
     }
 
     res.status(201).json({
@@ -41,7 +48,7 @@ export const signup = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);   // 👈 add this for debugging
+    console.error("Signup error:", error);
     res.status(500).json({ message: "Signup error" });
   }
 };
