@@ -5,9 +5,15 @@ import Provider from "../models/ProviderProfile.js";
 
 export const signup = async (req, res) => {
   try {
-    const { username, email, password, role, phone, services } = req.body;
-
-    console.log("Incoming role:", role);
+    const {
+      username,
+      email,
+      password,
+      role,
+      phone,
+      services,
+      serviceArea,
+    } = req.body;
 
     const exist = await User.findOne({ email });
     if (exist)
@@ -23,22 +29,26 @@ export const signup = async (req, res) => {
       role: role || "client",
     });
 
-    console.log("Saved user role:", user.role);
-
+    // ✅ If provider → validate & create provider profile
     if (user.role === "provider") {
-      console.log("Provider condition matched ✅");
+
+      if (!services || services.length === 0) {
+        return res.status(400).json({
+          message: "Please select at least one service",
+        });
+      }
+
+      if (!serviceArea) {
+        return res.status(400).json({
+          message: "Service area is required",
+        });
+      }
 
       await Provider.create({
         user: user._id,
-        services: services || [],
-        verificationStatus: "pending",
-        availability: true,
-        completedJobs: 0,
+        services,
+        serviceArea,
       });
-
-      console.log("Provider created successfully ✅");
-    } else {
-      console.log("Provider condition NOT matched ❌");
     }
 
     res.status(201).json({
@@ -48,7 +58,7 @@ export const signup = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Signup error:", error);
+    console.error(error);
     res.status(500).json({ message: "Signup error" });
   }
 };
