@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
 import Provider from "../models/ProviderProfile.js";
 
-export const signup  = async(req,res) =>{
-   try {
+export const signup = async (req, res) => {
+  try {
     const { username, email, password, role, phone, services } = req.body;
 
     const exist = await User.findOne({ email });
@@ -21,27 +21,30 @@ export const signup  = async(req,res) =>{
       role: role || "client",
     });
 
-     // ✅ If user is provider → create provider document
-    if (role === "provider") {
+    // ✅ VERY IMPORTANT FIX
+    if (user.role === "provider") {
       await Provider.create({
         user: user._id,
-        services: services || [],
-        verificationStatus: "pending",  // better than approved
+        services: services && services.length > 0 ? services : [],
+        verificationStatus: "pending",
         availability: true,
         completedJobs: 0,
       });
+
+      console.log("Provider created successfully");
     }
 
     res.status(201).json({
       success: true,
       message: "Signup successful",
-      user
+      user,
     });
 
   } catch (error) {
+    console.error(error);   // 👈 add this for debugging
     res.status(500).json({ message: "Signup error" });
   }
-}
+};
 
 
 export const login = async (req, res) =>{
