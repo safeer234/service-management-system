@@ -1,10 +1,11 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
+import Provider from "../models/providerModel.js";
 
 export const signup  = async(req,res) =>{
    try {
-    const { username, email, password, role, phone } = req.body;
+    const { username, email, password, role, phone, services } = req.body;
 
     const exist = await User.findOne({ email });
     if (exist)
@@ -19,6 +20,17 @@ export const signup  = async(req,res) =>{
       password: hashed,
       role: role || "client",
     });
+
+     // ✅ If user is provider → create provider document
+    if (role === "provider") {
+      await Provider.create({
+        user: user._id,
+        services: services || [],
+        verificationStatus: "pending",  // better than approved
+        availability: true,
+        completedJobs: 0,
+      });
+    }
 
     res.status(201).json({
       success: true,
