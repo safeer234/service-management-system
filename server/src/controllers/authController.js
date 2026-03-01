@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
-import Provider from "../models/providerModel.js";
+import Provider from "../models/ProviderProfile.js";
 
 export const signup  = async(req,res) =>{
    try {
