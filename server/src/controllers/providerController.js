@@ -225,3 +225,50 @@ export const getProviderDashboard = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc   Reject service request
+ * @route  PATCH /api/provider/reject/:id
+ */
+export const rejectServiceRequest = async (req, res) => {
+  try {
+    const request = await ServiceRequest.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Service request not found"
+      });
+    }
+
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Only pending requests can be rejected"
+      });
+    }
+
+    // Assign provider who rejected
+    request.provider = req.user.id;
+    request.status = "rejected";
+
+    await request.save();
+
+    // If payment already created, update status
+    await Payment.findOneAndUpdate(
+      { serviceRequest: request._id },
+      { status: "cancelled" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Service request rejected successfully"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to reject service request"
+    });
+  }
+};

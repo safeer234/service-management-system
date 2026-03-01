@@ -5,7 +5,8 @@ import {
   getMyRequests,
   completeService,
   getProviderEarnings,
-  getProviderDashboard
+  getProviderDashboard,
+  rejectServiceRequest
 } from "../controllers/providerController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -26,10 +27,10 @@ router.get(
 
 /**
  * Accept a service request
- * PUT /api/provider/request/:id/accept
+ * PUT /api/provider/request/accept:id
  */
 router.put(
-  "/request/:id/accept",
+  "/request/accept/:id",
   protect,
   isProvider,
   acceptServiceRequest
@@ -51,7 +52,7 @@ router.get(
  * PUT /api/provider/request/:id/complete
  */
 router.put(
-  "/request/:id/complete",
+  "/request/complete/:id",
   protect,
   isProvider,
   completeService
@@ -69,5 +70,7 @@ router.get(
 );
 
 router.get("/dashboard", protect, isProvider, getProviderDashboard);
+
+router.patch("/request/reject/:id", protect, isProvider, rejectServiceRequest);
 
 export default router;
