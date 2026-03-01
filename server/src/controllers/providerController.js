@@ -122,7 +122,7 @@ export const completeService = async (req, res) => {
     await request.save();
 
     // Update provider stats
-    await ProviderProfile.findOneAndUpdate(
+    await Provider.findOneAndUpdate(
       { user: req.user.id },
       { $inc: { completedJobs: 1 } }
     );

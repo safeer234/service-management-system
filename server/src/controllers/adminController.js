@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import ProviderProfile from "../models/ProviderProfile.js";
+import Provider from "../models/ProviderProfile.js";
 import ServiceRequest from "../models/ServiceRequests.js";
 import Payment from "../models/Payment.js";
 import Service from "../models/Service.js";
@@ -43,7 +43,7 @@ export const getAdminDashboard = async (req, res) => {
  */
 export const getAllProviders = async (req, res) => {
   try {
-    const providers = await ProviderProfile.find()
+    const providers = await Provider.find()
       .populate("user", "name email role");
 
     res.status(200).json({
@@ -66,7 +66,7 @@ export const updateProviderStatus = async (req, res) => {
   try {
     const { status } = req.body; // approved | rejected
 
-    const provider = await ProviderProfile.findById(req.params.id);
+    const provider = await Provider.findById(req.params.id);
 
     if (!provider) {
       return res.status(404).json({
