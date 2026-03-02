@@ -11,7 +11,7 @@ import Service from "../models/Service.js";
 export const getAdminDashboard = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
-    const totalProviders = await ProviderProfile.countDocuments();
+    const totalProviders = await Provider.countDocuments();
     const totalRequests = await ServiceRequest.countDocuments();
     const totalPayments = await Payment.countDocuments({ status: "paid" });
     const totalService = await Service.countDocuments();
