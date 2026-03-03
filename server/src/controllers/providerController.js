@@ -13,7 +13,7 @@ export const getAvailableRequests = async (req, res) => {
       user: req.user.id,
       verificationStatus: "approved",
       availability: true
-    }).lean();
+    });
 
     if (!providerProfile) {
       return res.status(403).json({
@@ -24,21 +24,19 @@ export const getAvailableRequests = async (req, res) => {
 
     const requests = await ServiceRequest.find({
       status: "pending",
-      provider: null,
-      category: { $in: providerProfile.services }
-    })
-      .populate("client", "username email")
-      .sort({ createdAt: -1 })
-      .lean();
+      serviceType: {
+        $in: providerProfile.services.map(
+          s => new RegExp(s, "i")   // 🔥 FIXED
+        )
+      }
+    }).populate("client", "username email");
 
     res.status(200).json({
       success: true,
-      count: requests.length,   // ✅ nice addition
       data: requests
     });
 
   } catch (error) {
-    console.error("Provider fetch error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch service requests"
