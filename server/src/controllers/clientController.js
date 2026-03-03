@@ -12,7 +12,8 @@ export const createServiceRequest = async (req, res) => {
       serviceAddress,
       preferredDate,
       estimatedPrice,
-      description
+      description,
+      
     } = req.body;
 
     const request = await ServiceRequest.create({
@@ -21,7 +22,8 @@ export const createServiceRequest = async (req, res) => {
       serviceAddress,
       preferredDate,
       estimatedPrice,
-      description
+      description,
+    
     });
 
     // Create payment record (tracking only)

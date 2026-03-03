@@ -9,12 +9,11 @@ import Payment from "../models/Payment.js";
  */
 export const getAvailableRequests = async (req, res) => {
   try {
-    // Get provider profile
     const providerProfile = await Provider.findOne({
       user: req.user.id,
       verificationStatus: "approved",
       availability: true
-    });
+    }).lean();
 
     if (!providerProfile) {
       return res.status(403).json({
@@ -23,19 +22,23 @@ export const getAvailableRequests = async (req, res) => {
       });
     }
 
-    // Find pending requests matching provider services
     const requests = await ServiceRequest.find({
-  status: "pending",
-  serviceType: {
-    $in: providerProfile.services.map(s => new RegExp(`^${s}$`, "i"))
-  }
-}).populate("client", "name email");
+      status: "pending",
+      provider: null,
+      category: { $in: providerProfile.services }
+    })
+      .populate("client", "username email")
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({
       success: true,
+      count: requests.length,   // ✅ nice addition
       data: requests
     });
+
   } catch (error) {
+    console.error("Provider fetch error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch service requests"
