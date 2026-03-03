@@ -1,19 +1,18 @@
 import ServiceRequest from "../models/ServiceRequests.js";
 import Provider from "../models/ProviderProfile.js";
 import Payment from "../models/Payment.js";
+import mongoose from "mongoose";
 
-
-/**
- * @desc   Get service requests available for provider
- * @route  GET /api/provider/requests
- */
+/* ======================================================
+   GET AVAILABLE REQUESTS (CATEGORY BASED)
+====================================================== */
 export const getAvailableRequests = async (req, res) => {
   try {
     const providerProfile = await Provider.findOne({
       user: req.user.id,
       verificationStatus: "approved",
       availability: true
-    });
+    }).lean();
 
     if (!providerProfile) {
       return res.status(403).json({
@@ -24,19 +23,21 @@ export const getAvailableRequests = async (req, res) => {
 
     const requests = await ServiceRequest.find({
       status: "pending",
-      serviceType: {
-        $in: providerProfile.services.map(
-          s => new RegExp(s, "i")   // 🔥 FIXED
-        )
-      }
-    }).populate("client", "username email");
+      provider: null, // 🔥 VERY IMPORTANT
+      category: { $in: providerProfile.services }
+    })
+      .populate("client", "username email")
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({
       success: true,
+      count: requests.length,
       data: requests
     });
 
   } catch (error) {
+    console.error("Fetch available requests error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch service requests"
@@ -44,15 +45,18 @@ export const getAvailableRequests = async (req, res) => {
   }
 };
 
-/**
- * @desc   Accept a service request
- * @route  PUT /api/provider/request/:id/accept
- */
+/* ======================================================
+   ACCEPT SERVICE REQUEST
+====================================================== */
 export const acceptServiceRequest = async (req, res) => {
   try {
-    const request = await ServiceRequest.findById(req.params.id);
+    const request = await ServiceRequest.findOne({
+      _id: req.params.id,
+      status: "pending",
+      provider: null
+    });
 
-    if (!request || request.status !== "pending") {
+    if (!request) {
       return res.status(400).json({
         success: false,
         message: "Service request not available"
@@ -61,10 +65,8 @@ export const acceptServiceRequest = async (req, res) => {
 
     request.provider = req.user.id;
     request.status = "accepted";
-
     await request.save();
 
-    // Update payment provider reference
     await Payment.findOneAndUpdate(
       { serviceRequest: request._id },
       { provider: req.user.id }
@@ -74,7 +76,9 @@ export const acceptServiceRequest = async (req, res) => {
       success: true,
       message: "Service request accepted successfully"
     });
+
   } catch (error) {
+    console.error("Accept error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to accept service request"
@@ -82,20 +86,60 @@ export const acceptServiceRequest = async (req, res) => {
   }
 };
 
-/**
- * @desc   Get provider's assigned requests
- * @route  GET /api/provider/my-requests
- */
+/* ======================================================
+   REJECT SERVICE REQUEST
+====================================================== */
+export const rejectServiceRequest = async (req, res) => {
+  try {
+    const request = await ServiceRequest.findById(req.params.id);
+
+    if (!request || request.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Only pending requests can be rejected"
+      });
+    }
+
+    // ❗ Do NOT assign provider when rejecting
+    request.status = "cancelled";
+    await request.save();
+
+    await Payment.findOneAndUpdate(
+      { serviceRequest: request._id },
+      { status: "cancelled" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Service request rejected"
+    });
+
+  } catch (error) {
+    console.error("Reject error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reject service request"
+    });
+  }
+};
+
+/* ======================================================
+   GET MY REQUESTS
+====================================================== */
 export const getMyRequests = async (req, res) => {
   try {
     const requests = await ServiceRequest.find({
       provider: req.user.id
-    }).populate("client", "name email");
+    })
+      .populate("client", "username email")
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({
       success: true,
       data: requests
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -104,25 +148,26 @@ export const getMyRequests = async (req, res) => {
   }
 };
 
-/**
- * @desc   Mark service as completed
- * @route  PUT /api/provider/request/:id/complete
- */
+/* ======================================================
+   COMPLETE SERVICE
+====================================================== */
 export const completeService = async (req, res) => {
   try {
-    const request = await ServiceRequest.findById(req.params.id);
+    const request = await ServiceRequest.findOne({
+      _id: req.params.id,
+      provider: req.user.id
+    });
 
-    if (!request || request.provider.toString() !== req.user.id) {
+    if (!request) {
       return res.status(403).json({
         success: false,
-        message: "Not authorized to complete this service"
+        message: "Not authorized"
       });
     }
 
     request.status = "completed";
     await request.save();
 
-    // Update provider stats
     await Provider.findOneAndUpdate(
       { user: req.user.id },
       { $inc: { completedJobs: 1 } }
@@ -132,6 +177,7 @@ export const completeService = async (req, res) => {
       success: true,
       message: "Service marked as completed"
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -140,16 +186,17 @@ export const completeService = async (req, res) => {
   }
 };
 
-/**
- * @desc   Get provider earnings
- * @route  GET /api/provider/earnings
- */
+/* ======================================================
+   PROVIDER EARNINGS
+====================================================== */
 export const getProviderEarnings = async (req, res) => {
   try {
+    const providerId = new mongoose.Types.ObjectId(req.user.id);
+
     const payments = await Payment.find({
-      provider: req.user.id,
+      provider: providerId,
       status: "paid"
-    });
+    }).lean();
 
     const totalEarnings = payments.reduce(
       (sum, payment) => sum + payment.amount,
@@ -161,6 +208,7 @@ export const getProviderEarnings = async (req, res) => {
       totalEarnings,
       payments
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -169,110 +217,65 @@ export const getProviderEarnings = async (req, res) => {
   }
 };
 
-
-
-
+/* ======================================================
+   PROVIDER DASHBOARD
+====================================================== */
 export const getProviderDashboard = async (req, res) => {
   try {
     const providerId = req.user.id;
 
     const totalRequests = await ServiceRequest.countDocuments({
-      provider: providerId,
+      provider: providerId
     });
 
-    const pendingRequests = await ServiceRequest.countDocuments({
+    const acceptedRequests = await ServiceRequest.countDocuments({
       provider: providerId,
-      status: "pending",
+      status: "accepted"
     });
 
     const completedRequests = await ServiceRequest.countDocuments({
       provider: providerId,
-      status: "completed",
+      status: "completed"
     });
 
     const earnings = await Payment.aggregate([
       {
         $match: {
-          provider: providerId,
-          status: "paid",
-        },
+          provider: new mongoose.Types.ObjectId(providerId),
+          status: "paid"
+        }
       },
       {
         $group: {
           _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+          total: { $sum: "$amount" }
+        }
+      }
     ]);
 
     const recentRequests = await ServiceRequest.find({
-      provider: providerId,
+      provider: providerId
     })
-      .populate("user", "username email")
+      .populate("client", "username email")
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(5)
+      .lean();
 
     res.status(200).json({
       success: true,
       data: {
         totalRequests,
-        pendingRequests,
+        acceptedRequests,
         completedRequests,
         totalEarnings: earnings[0]?.total || 0,
-        recentRequests,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch provider dashboard",
-    });
-  }
-};
-
-/**
- * @desc   Reject service request
- * @route  PATCH /api/provider/reject/:id
- */
-export const rejectServiceRequest = async (req, res) => {
-  try {
-    const request = await ServiceRequest.findById(req.params.id);
-
-    if (!request) {
-      return res.status(404).json({
-        success: false,
-        message: "Service request not found"
-      });
-    }
-
-    if (request.status !== "pending") {
-      return res.status(400).json({
-        success: false,
-        message: "Only pending requests can be rejected"
-      });
-    }
-
-    // Assign provider who rejected
-    request.provider = req.user.id;
-    request.status = "rejected";
-
-    await request.save();
-
-    // If payment already created, update status
-    await Payment.findOneAndUpdate(
-      { serviceRequest: request._id },
-      { status: "cancelled" }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Service request rejected successfully"
+        recentRequests
+      }
     });
 
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Failed to reject service request"
+      message: "Failed to fetch provider dashboard"
     });
   }
 };
