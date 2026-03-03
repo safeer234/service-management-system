@@ -8,25 +8,24 @@ import Payment from "../models/Payment.js";
 export const createServiceRequest = async (req, res) => {
   try {
     const {
+      category,            // ✅ ADD THIS
       serviceType,
       serviceAddress,
       preferredDate,
       estimatedPrice,
       description,
-      
     } = req.body;
 
     const request = await ServiceRequest.create({
-      client: req.user.id, // logged-in client
+      client: req.user.id,
+      category,            // ✅ ADD THIS
       serviceType,
       serviceAddress,
       preferredDate,
       estimatedPrice,
       description,
-    
     });
 
-    // Create payment record (tracking only)
     await Payment.create({
       serviceRequest: request._id,
       client: req.user.id,
@@ -40,13 +39,13 @@ export const createServiceRequest = async (req, res) => {
       message: "Service request created successfully",
       data: request
     });
+
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "Failed to create service request"
     });
-    console.log(error);
-    
   }
 };
 
