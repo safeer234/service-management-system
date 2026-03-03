@@ -148,40 +148,47 @@ export const logout = (req, res) => {
 
 
 
+
 export const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
 
-    const user = await User.findOne({ email });
+  const user = await User.findOne({ email: req.body.email });
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-
-    const resetToken = crypto.randomBytes(32).toString("hex");
-
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Reset token generated",
-      resetToken // for testing (remove in production)
-    });
-
-  } catch (error) {
-    res.status(500).json({
+  if (!user) {
+    return res.status(404).json({
       success: false,
-      message: "Failed to process request"
+      message: "User not found"
     });
   }
-};
 
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+  await user.save();
+
+ const resetUrl =
+  process.env.NODE_ENV === "production"
+    ? `${process.env.FRONTEND_URL}/auth/resetPassword/${resetToken}`
+    : `http://localhost:5176/auth/resetPassword/${resetToken}`;
+
+  const message = `
+  You requested a password reset.
+  Click this link to reset your password:
+  ${resetUrl}
+  `;
+
+  await sendEmail({
+    email: user.email,
+    subject: "Password Reset Request",
+    message
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Reset link sent to email"
+  });
+};
 
 
 
