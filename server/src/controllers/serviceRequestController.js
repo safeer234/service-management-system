@@ -3,7 +3,7 @@ import ServiceRequest from "../models/ServiceRequests.js";
 export const createServiceRequest = async (req, res) => {
   try {
     const {
-      category,           // ✅ MUST BE HERE
+      category,
       serviceType,
       serviceAddress,
       preferredDate,
@@ -11,25 +11,11 @@ export const createServiceRequest = async (req, res) => {
       description
     } = req.body;
 
-    console.log("Incoming Body:", req.body); // 👈 Add this for safety
-
-    if (
-      !category ||
-      !serviceType ||
-      !serviceAddress ||
-      !preferredDate ||
-      !estimatedPrice ||
-      !description
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required"
-      });
-    }
+    console.log("BODY RECEIVED:", req.body);
 
     const serviceRequest = await ServiceRequest.create({
       client: req.user.id,
-      category,          // ✅ MUST SAVE THIS
+      category,
       serviceType,
       serviceAddress,
       preferredDate,
