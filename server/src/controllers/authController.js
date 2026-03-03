@@ -84,7 +84,7 @@ export const login = async (req, res) =>{
       httpOnly: true,
       secure: true, // true in production (HTTPS)
       sameSite: "none",
-      maxAge: rememberme ? 7 * 24 * 60 * 60* 1000 : 24 * 60 * 60 * 1000  // 1 day
+      maxAge: rememberMe ? 7 * 24 * 60 * 60* 1000 : 24 * 60 * 60 * 1000  // 1 day
     });
 
     res.status(200).json({
