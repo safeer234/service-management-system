@@ -3,7 +3,7 @@ import ServiceRequest from "../models/ServiceRequests.js";
 export const createServiceRequest = async (req, res) => {
   try {
     const {
-      category,            // ✅ NEW
+      category,           // ✅ MUST BE HERE
       serviceType,
       serviceAddress,
       preferredDate,
@@ -11,7 +11,8 @@ export const createServiceRequest = async (req, res) => {
       description
     } = req.body;
 
-    // 🔎 Basic validation
+    console.log("Incoming Body:", req.body); // 👈 Add this for safety
+
     if (
       !category ||
       !serviceType ||
@@ -28,14 +29,12 @@ export const createServiceRequest = async (req, res) => {
 
     const serviceRequest = await ServiceRequest.create({
       client: req.user.id,
-      category,                 // ✅ SAVED
+      category,          // ✅ MUST SAVE THIS
       serviceType,
       serviceAddress,
       preferredDate,
       estimatedPrice,
-      description,
-      provider: null,
-      status: "pending"
+      description
     });
 
     res.status(201).json({
@@ -45,8 +44,7 @@ export const createServiceRequest = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Create request error:", error);
-
+    console.log("CREATE ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Failed to create service request"
