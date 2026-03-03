@@ -1,18 +1,33 @@
 import mongoose from "mongoose"
 
-
 const userSchema = new mongoose.Schema({
-    username:{type:String, required:true, trim:true},
-    phone:{type:Number, required:true},
-    email:{type:String, required:true, lowercase:true, unique:true},
-    password:{type:String, required:true},
-    role:{type:String, enum:["client","provider","admin"],default:"client"}
+    username: { type: String, required: true, trim: true },
+
+    phone: { type: Number, required: true },
+
+    email: { type: String, required: true, lowercase: true, unique: true },
+
+    password: { type: String, required: true },
+
+    role: { 
+        type: String, 
+        enum: ["client","provider","admin"], 
+        default: "client" 
+    },
+
+    // ✅ ADD THESE TWO HERE
+    resetPasswordToken: {
+        type: String
+    },
+
+    resetPasswordExpire: {
+        type: Date
+    }
+
 },
 {
-    timestamps:true
-}
-);
-
+    timestamps: true
+});
 
 const User = mongoose.model("User", userSchema);
 export default User;
