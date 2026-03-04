@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
 import Provider from "../models/ProviderProfile.js";
 import crypto from "crypto";
+import sendEmail from "../utils/sendEmail.js";
 
 export const signup = async (req, res) => {
   try {
@@ -208,7 +209,7 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    user.password = newPassword;
+   user.password = await bcrypt.hash(newPassword, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
