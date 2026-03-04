@@ -1,21 +1,13 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ email, subject, message }) => {
 
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  await transporter.sendMail({
-    from: `"ServiceHub" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: "ServiceHub <onboarding@resend.dev>",
     to: email,
-    subject,
+    subject: subject,
     text: message
   });
 
