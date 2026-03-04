@@ -41,50 +41,62 @@ function AdminHome() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold mb-8">Admin Dashboard</h2>
+    <div className="p-4 sm:p-6 md:p-8 w-full">
 
-      {loading && <p>Loading dashboard...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">
+        Admin Dashboard
+      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {loading && (
+        <p className="text-gray-600 text-sm sm:text-base">
+          Loading dashboard...
+        </p>
+      )}
+
+      {error && (
+        <p className="text-red-500 text-sm sm:text-base">
+          {error}
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
         {/* Total Users */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
+        <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 transition hover:shadow-xl">
           <h3 className="text-gray-600 text-sm">Total Users</h3>
-          <p className="text-3xl font-bold text-[#ea580c] mt-2">
+          <p className="text-2xl sm:text-3xl font-bold text-[#ea580c] mt-2">
             {stats.totalUsers}
           </p>
         </div>
 
         {/* Total Providers */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
+        <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 transition hover:shadow-xl">
           <h3 className="text-gray-600 text-sm">Total Providers</h3>
-          <p className="text-3xl font-bold text-[#ea580c] mt-2">
+          <p className="text-2xl sm:text-3xl font-bold text-[#ea580c] mt-2">
             {stats.totalProviders}
           </p>
         </div>
 
         {/* Total Service Requests */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
+        <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 transition hover:shadow-xl">
           <h3 className="text-gray-600 text-sm">Total Service Requests</h3>
-          <p className="text-3xl font-bold text-[#ea580c] mt-2">
+          <p className="text-2xl sm:text-3xl font-bold text-[#ea580c] mt-2">
             {stats.totalRequests}
           </p>
         </div>
 
-        {/* Total Payments (Paid Only) */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
+        {/* Total Paid Payments */}
+        <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 transition hover:shadow-xl">
           <h3 className="text-gray-600 text-sm">Total Paid Payments</h3>
-          <p className="text-3xl font-bold text-[#ea580c] mt-2">
+          <p className="text-2xl sm:text-3xl font-bold text-[#ea580c] mt-2">
             {stats.totalPayments}
           </p>
         </div>
 
         {/* Total Services */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
+        <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 transition hover:shadow-xl">
           <h3 className="text-gray-600 text-sm">Total Services</h3>
-          <p className="text-3xl font-bold text-[#ea580c] mt-2">
+          <p className="text-2xl sm:text-3xl font-bold text-[#ea580c] mt-2">
             {stats.totalService}
           </p>
         </div>

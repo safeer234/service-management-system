@@ -48,14 +48,16 @@ function Users() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-6">All Users</h2>
+    <div className="p-4 sm:p-6 w-full">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6">
+        All Users
+      </h2>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && <p className="text-sm">Loading...</p>}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-md rounded-lg">
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="min-w-200 w-full text-sm sm:text-base">
           <thead className="bg-[#ea580c] text-white">
             <tr>
               <th className="py-3 px-4 text-left">Username</th>
@@ -73,12 +75,21 @@ function Users() {
                 key={user._id}
                 className="border-b hover:bg-gray-50"
               >
-                <td className="py-3 px-4">{user.username}</td>
-                <td className="py-3 px-4">{user.email}</td>
-                <td className="py-3 px-4">{user.phone}</td>
+                <td className="py-3 px-4 whitespace-nowrap">
+                  {user.username}
+                </td>
+
+                <td className="py-3 px-4 whitespace-nowrap">
+                  {user.email}
+                </td>
+
+                <td className="py-3 px-4 whitespace-nowrap">
+                  {user.phone}
+                </td>
+
                 <td className="py-3 px-4 capitalize">
                   <span
-                    className={`px-2 py-1 rounded text-xs ${
+                    className={`px-2 py-1 rounded text-xs sm:text-sm ${
                       user.role === "admin"
                         ? "bg-green-100 text-green-700"
                         : "bg-blue-100 text-blue-700"
@@ -87,14 +98,15 @@ function Users() {
                     {user.role}
                   </span>
                 </td>
-                <td className="py-3 px-4">
+
+                <td className="py-3 px-4 whitespace-nowrap">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
 
                 <td className="py-3 px-4 text-center">
                   <button
                     onClick={() => deleteUser(user._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                    className="bg-red-500 text-white px-3 py-1 rounded text-xs sm:text-sm hover:bg-red-600"
                   >
                     Delete
                   </button>

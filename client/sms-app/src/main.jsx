@@ -33,6 +33,8 @@ import ServiceRequests from "./provider/pages/ServiceRequests";
 import ProviderLayout from "./ProviderLayout";
 import Payment from "./pages/Payment";
 import ProviderVerification from "./admin/pages/ProviderVerification";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 export const router = createBrowserRouter([
 
   // client route
@@ -59,6 +61,9 @@ export const router = createBrowserRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "signup", element: <Signup /> },
+      { path: "forgotPassword", element: <ForgotPassword /> },
+        {path:"/auth/resetPassword/:token", element:<ResetPassword />}
+
     ],
   },
 

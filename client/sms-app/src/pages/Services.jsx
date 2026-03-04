@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";   // ✅ ADD THIS
+import { toast } from "react-toastify";
 import headerimg from "../assets/images/services/header img/serviceimg.png";
 import headerimg2 from "../assets/images/services/header img/serviceimg2.png";
 
@@ -14,16 +14,14 @@ function Services() {
   const servicesPerPage = 6;
 
   const [selectedService, setSelectedService] = useState(null);
+
   const [bookingData, setBookingData] = useState({
-    serviceType: "",
-    serviceAddress: "",
-    preferredDate: "",
-    estimatedPrice: "",
-    description: "",
-  });
+  serviceAddress: "",
+  preferredDate: "",
+  description: "",
+});
 
   /* ================= FETCH SERVICES ================= */
-
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -31,17 +29,14 @@ function Services() {
           "https://service-management-system-hj06.onrender.com/api/services"
         );
         setServices(res.data.data);
-      } catch (err) {
-        console.log(err);
-        toast.error("Failed to load services");  // ✅ Toast error
+      } catch {
+        toast.error("Failed to load services");
       }
     };
-
     fetchServices();
   }, []);
 
-  /* ================= FILTER + SORT ================= */
-
+  /* ================= FILTER ================= */
   const filteredServices = useMemo(() => {
     let updated = [...services];
 
@@ -64,8 +59,6 @@ function Services() {
     return updated;
   }, [services, search, sortOption, categoryFilter]);
 
-  /* ================= PAGINATION ================= */
-
   const indexOfLast = currentPage * servicesPerPage;
   const indexOfFirst = indexOfLast - servicesPerPage;
   const currentServices = filteredServices.slice(
@@ -77,58 +70,85 @@ function Services() {
     filteredServices.length / servicesPerPage
   );
 
-  /* ================= BOOKING ================= */
+  /* ================= BOOKING SUBMIT ================= */
+ const handleBookingSubmit = async () => {
 
-  const handleBookingSubmit = async () => {
-    try {
-      await axios.post(
-        "https://service-management-system-hj06.onrender.com/api/client/request",
-        bookingData,
-        { withCredentials: true }
-      );
+  console.log("Selected Service:", selectedService);
+console.log("Category:", selectedService?.category);
+  if (!selectedService) {
+    toast.error("No service selected");
+    return;
+  }
 
-      toast.success("Service booked successfully! 🎉");  // ✅ SUCCESS TOAST
-      setSelectedService(null);
+  if (
+    !bookingData.serviceAddress ||
+    !bookingData.preferredDate ||
+    !bookingData.description
+  ) {
+    toast.error("All fields are required");
+    return;
+  }
 
-    } catch (err) {
-      console.error("Booking Error:", err);
-      toast.error(
-        err.response?.data?.message || "Booking failed ❌"
-      );  // ✅ ERROR TOAST
-    }
+  const requestPayload = {
+    category: selectedService.category,
+    serviceType: selectedService.name,
+    estimatedPrice: selectedService.price,
+    serviceAddress: bookingData.serviceAddress,
+    preferredDate: bookingData.preferredDate,
+    description: bookingData.description,
   };
 
-  /* ================= UI ================= */
+  console.log("SENDING:", requestPayload);
 
+  try {
+    await axios.post(
+      "https://service-management-system-hj06.onrender.com/api/client/request",
+      requestPayload,
+      { withCredentials: true }
+    );
+
+    toast.success("Service booked successfully! 🎉");
+
+    setSelectedService(null);
+    setBookingData({
+      serviceAddress: "",
+      preferredDate: "",
+      description: "",
+    });
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Booking failed ❌");
+  }
+};
   return (
     <div>
       {/* HEADER */}
-      <header className="flex items-center gap-80 px-10 py-5 bg-[#ea580c]">
+      <header className="flex flex-col lg:flex-row items-center justify-between gap-6 px-6 lg:px-16 py-8 bg-[#ea580c] text-center lg:text-left">
+        <img className="w-40 sm:w-52 lg:w-60" src={headerimg} alt="" />
+
         <div>
-          <img className="w-60" src={headerimg} alt="" />
-        </div>
-        <div>
-          <h1 className="text-5xl text-white">Our Services</h1>
-          <p className="text-white">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white font-bold">
+            Our Services
+          </h1>
+          <p className="text-white mt-2">
             Explore top-rated services that we offer
           </p>
         </div>
-        <div className="px-20">
-          <img className="w-30" src={headerimg2} alt="" />
-        </div>
+
+        <img className="w-24 sm:w-28 lg:w-32" src={headerimg2} alt="" />
       </header>
 
       {/* FILTERS */}
-      <div className="p-8 flex flex-wrap gap-4 justify-between">
+      <div className="p-6 lg:p-8 flex flex-col sm:flex-row flex-wrap gap-4 justify-center lg:justify-between">
         <input
           type="text"
           placeholder="Search service..."
-          className="border p-2 rounded w-60"
+          className="border p-2 rounded w-full sm:w-60"
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full sm:w-auto"
           onChange={(e) => setSortOption(e.target.value)}
         >
           <option value="">Sort</option>
@@ -137,7 +157,7 @@ function Services() {
         </select>
 
         <select
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full sm:w-auto"
           onChange={(e) => setCategoryFilter(e.target.value)}
         >
           <option value="">All Categories</option>
@@ -151,7 +171,7 @@ function Services() {
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-3 gap-6 p-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 lg:p-8">
         {currentServices.map((service) => (
           <div
             key={service._id}
@@ -172,15 +192,16 @@ function Services() {
               ₹ {service.price}
             </p>
 
-            <div className="text-yellow-400 mt-2">⭐⭐⭐⭐☆</div>
-
             <button
               onClick={() => {
                 setSelectedService(service);
                 setBookingData({
-                  ...bookingData,
+                  category: service.category,     // ✅ IMPORTANT
                   serviceType: service.name,
                   estimatedPrice: service.price,
+                  serviceAddress: "",
+                  preferredDate: "",
+                  description: "",
                 });
               }}
               className="mt-3 bg-[#ea580c] text-white px-4 py-2 rounded w-full"
@@ -192,12 +213,12 @@ function Services() {
       </div>
 
       {/* PAGINATION */}
-      <div className="flex justify-center gap-2 mb-10">
+      <div className="flex flex-wrap justify-center gap-2 mb-10 px-4">
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentPage(index + 1)}
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border rounded hover:bg-gray-100"
           >
             {index + 1}
           </button>
@@ -206,44 +227,48 @@ function Services() {
 
       {/* BOOKING MODAL */}
       {selectedService && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-xl w-96">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center px-4 z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-center">
               Book {selectedService.name}
             </h2>
 
-            <input
-              placeholder="Service Address"
-              className="border p-2 w-full mb-2"
-              onChange={(e) =>
-                setBookingData({
-                  ...bookingData,
-                  serviceAddress: e.target.value,
-                })
-              }
-            />
+  <input
+  placeholder="Service Address"
+  className="border p-2 w-full mb-2"
+  value={bookingData.serviceAddress}
+  onChange={(e) =>
+    setBookingData((prev) => ({
+      ...prev,
+      serviceAddress: e.target.value,
+    }))
+  }
+/>
 
-            <input
-              type="date"
-              className="border p-2 w-full mb-2"
-              onChange={(e) =>
-                setBookingData({
-                  ...bookingData,
-                  preferredDate: e.target.value,
-                })
-              }
-            />
+<input
+  type="date"
+  className="border p-2 w-full mb-2"
+  value={bookingData.preferredDate}
+  onChange={(e) =>
+    setBookingData((prev) => ({
+      ...prev,
+      preferredDate: e.target.value,
+    }))
+  }
+/>
 
-            <textarea
-              placeholder="Description"
-              className="border p-2 w-full mb-2"
-              onChange={(e) =>
-                setBookingData({
-                  ...bookingData,
-                  description: e.target.value,
-                })
-              }
-            />
+<textarea
+  placeholder="Description"
+  className="border p-2 w-full mb-2"
+  value={bookingData.description}
+  onChange={(e) =>
+    setBookingData((prev) => ({
+      ...prev,
+      description: e.target.value,
+    }))
+  }
+/>
+
 
             <button
               onClick={handleBookingSubmit}

@@ -13,8 +13,6 @@ function Bookings() {
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 6;
 
-  /* ================= FETCH BOOKINGS ================= */
-
   useEffect(() => {
     fetchBookings();
   }, []);
@@ -29,24 +27,22 @@ function Bookings() {
 
       setBookings(res.data.data);
     } catch (err) {
-  console.error("Fetch bookings error:", err);
+      console.error("Fetch bookings error:", err);
 
-  setError(
-    err.response?.data?.message ||
-    err.message ||
-    "Failed to fetch bookings"
-  );
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to fetch bookings"
+      );
 
-  toast.error(
-    err.response?.data?.message ||
-    "Failed to fetch bookings"
-  );
-} finally {
+      toast.error(
+        err.response?.data?.message ||
+          "Failed to fetch bookings"
+      );
+    } finally {
       setLoading(false);
     }
   };
-
-  /* ================= FILTER ================= */
 
   const filteredBookings = useMemo(() => {
     let updated = [...bookings];
@@ -68,8 +64,6 @@ function Bookings() {
     return updated;
   }, [bookings, search, statusFilter]);
 
-  /* ================= PAGINATION ================= */
-
   const indexOfLast = currentPage * bookingsPerPage;
   const indexOfFirst = indexOfLast - bookingsPerPage;
   const currentBookings = filteredBookings.slice(
@@ -80,8 +74,6 @@ function Bookings() {
   const totalPages = Math.ceil(
     filteredBookings.length / bookingsPerPage
   );
-
-  /* ================= UPDATE STATUS ================= */
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -94,13 +86,11 @@ function Bookings() {
       toast.success("Status updated");
       fetchBookings();
     } catch (err) {
-        toast.error(
-    err.response?.data?.message || "Failed to update status"
-  );
+      toast.error(
+        err.response?.data?.message || "Failed to update status"
+      );
     }
   };
-
-  /* ================= DELETE ================= */
 
   const deleteBooking = async (id) => {
     if (!window.confirm("Are you sure?")) return;
@@ -114,13 +104,11 @@ function Bookings() {
       toast.success("Booking deleted");
       fetchBookings();
     } catch (err) {
-       toast.error(
-    err.response?.data?.message || "Failed to delete booking"
-  );
+      toast.error(
+        err.response?.data?.message || "Failed to delete booking"
+      );
     }
   };
-
-  /* ================= STATUS BADGE ================= */
 
   const getStatusBadge = (status) => {
     if (status === "pending")
@@ -135,25 +123,24 @@ function Bookings() {
     return "bg-gray-100 text-gray-700";
   };
 
-  /* ================= UI ================= */
-
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">
+    <div className="p-4 sm:p-6 w-full">
+
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
         All Bookings
       </h2>
 
       {/* Filters */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
         <input
           type="text"
           placeholder="Search by service or user..."
-          className="border p-2 rounded w-60"
+          className="border p-2 rounded w-full sm:w-60"
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full sm:w-auto"
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="">All Status</option>
@@ -164,12 +151,12 @@ function Bookings() {
         </select>
       </div>
 
-      {loading && <p>Loading bookings...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && <p className="text-sm">Loading bookings...</p>}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-xl">
-        <table className="w-full text-left">
+        <table className="min-w-225 w-full text-left text-sm sm:text-base">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3">User</th>
@@ -192,7 +179,7 @@ function Bookings() {
                   <p className="font-semibold">
                     {booking.client?.username}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-500">
                     {booking.client?.email}
                   </p>
                 </td>
@@ -201,17 +188,17 @@ function Bookings() {
                   {booking.serviceType}
                 </td>
 
-                <td className="p-3">
+                <td className="p-3 whitespace-nowrap">
                   {booking.serviceAddress}
                 </td>
 
-                <td className="p-3">
+                <td className="p-3 whitespace-nowrap">
                   {new Date(
                     booking.preferredDate
                   ).toLocaleDateString()}
                 </td>
 
-                <td className="p-3 font-semibold text-[#ea580c]">
+                <td className="p-3 font-semibold text-[#ea580c] whitespace-nowrap">
                   ₹ {booking.estimatedPrice}
                 </td>
 
@@ -225,7 +212,7 @@ function Bookings() {
                   </span>
                 </td>
 
-                <td className="p-3 flex gap-2">
+                <td className="p-3 flex flex-wrap gap-2">
                   <button
                     onClick={() =>
                       updateStatus(
@@ -233,7 +220,7 @@ function Bookings() {
                         "approved"
                       )
                     }
-                    className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
+                    className="bg-blue-500 text-white px-2 py-1 rounded text-xs sm:text-sm"
                   >
                     Approve
                   </button>
@@ -245,7 +232,7 @@ function Bookings() {
                         "completed"
                       )
                     }
-                    className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                    className="bg-green-500 text-white px-2 py-1 rounded text-xs sm:text-sm"
                   >
                     Complete
                   </button>
@@ -254,7 +241,7 @@ function Bookings() {
                     onClick={() =>
                       deleteBooking(booking._id)
                     }
-                    className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+                    className="bg-red-500 text-white px-2 py-1 rounded text-xs sm:text-sm"
                   >
                     Delete
                   </button>
@@ -277,14 +264,14 @@ function Bookings() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex flex-wrap justify-center gap-2 mt-6">
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
             onClick={() =>
               setCurrentPage(index + 1)
             }
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border rounded text-sm hover:bg-gray-100"
           >
             {index + 1}
           </button>

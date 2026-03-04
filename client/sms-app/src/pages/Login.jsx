@@ -1,184 +1,227 @@
-import React from 'react'
-import loginimg from "../assets/images/login image/repair-services-for-equipment-vehicles-and-home-maintenance.png" 
-import { Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../features/auth/authSlice';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import loginimg from "../assets/images/login image/repair-services-for-equipment-vehicles-and-home-maintenance.png";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../features/auth/authSlice";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-const [formData, setFormData] = useState({
-  email: "",
-  password: ""
-});
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-const [error, setError] = useState("");
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+ 
+   const [rememberMe, setRememberMe] = useState(false);
 
-const dispatch = useDispatch();
+  /* ================= VALIDATION ================= */
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-
-  try {
-    setLoading(true);
-    setError("");
-
-    const res = await axios.post(
-      "https://service-management-system-hj06.onrender.com/api/auth/login",
-      formData,
-      { withCredentials: true }
-    );
-
-    dispatch(loginSuccess(res.data.user));
-
-    // Redirect based on role
-    const role = res.data.user.role;
-
-    if (role === "admin") {
-      navigate("/admin");
-    } else if (role === "provider") {
-      navigate("/provider");
-    } else {
-      navigate("/");
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      return false;
     }
 
-  } catch (err) {
-    setError(
-      err.response?.data?.message || "Login failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Enter valid email");
+      return false;
+    }
 
- const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.placeholder.toLowerCase()]: e.target.value
-   });
- };
-  
+    if (!formData.password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
+
+  /* ================= LOGIN ================= */
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        "https://service-management-system-hj06.onrender.com/api/auth/login",
+        {...formData,rememberMe},
+        { withCredentials: true }
+      );
+
+      const user = res.data.user;
+
+      dispatch(loginSuccess(user));
+      toast.success("Login successful 🎉");
+
+      // ✅ Remember Me Logic
+      
+
+      if (user.role === "admin") navigate("/admin");
+      else if (user.role === "provider") navigate("/provider");
+      else navigate("/");
+
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= HANDLE CHANGE ================= */
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
-    <div className='flex justify-center h-screen items-center'>
-      <div className=' flex  w-200 h-100  shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
-{/* img div */}
-        <div>
-            <img className='h-100 ' src={loginimg} alt="" />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 animate-fadeIn">
 
-        </div>
-        {/* content div */}
+      <div className="flex flex-col lg:flex-row w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500">
 
-
-        <div>
-            
-              <div className='px-35 py-10 font-medium text-2xl'>
-                <h1 className=''>Log <span className='text-[#ea580c]'>in</span></h1>
-              </div>
-
-              {/* email and pass div */}
-              <div className=' px-10'>
-                
-              <form className='mb-6' onSubmit={handleLogin}  action="">
-                {/* email div */}
-                <div className='flex mb-6 gap-2 border-b-2 border-[#a3a3a3]'>
-                    <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-fill="#ea580c" viewBox="0 0 24 24" >
-
-<path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m-8.61 10.79c.18.14.4.21.61.21s.43-.07.61-.21l1.55-1.21L18.58 18H5.41l4.42-4.42 1.55 1.21ZM20 6v.51l-8 6.22-8-6.22V6zm0 3.04v7.54l-4.24-4.24zm-11.76 3.3L4 16.58V9.04zM20 18"></path>
-</svg>
-
-                    <input
-                     className='w-70'
-                      type="email" 
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder='Email'
-                       />
-                </div>
-
-
-                  {/* password div */}
-                <div className='flex gap-2 mb-4 border-b-2 border-[#a3a3a3]'>
-                   <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-fill="#ea580c" viewBox="0 0 24 24" >
-
-<path d="M6 22h12c1.1 0 2-.9 2-2v-9c0-1.1-.9-2-2-2h-1V7c0-2.76-2.24-5-5-5S7 4.24 7 7v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M9 7c0-1.65 1.35-3 3-3s3 1.35 3 3v2H9zm-3 4h12v9H6z"></path>
-</svg>
-
-                    <input
-                     type="password"
-                     name="password"
-                     value={formData.password}
-                      placeholder='Password'
-                      onChange={handleChange} />
-                </div>
-                {/* remember and forget pass div */}
-
-                <div className='flex'>
-                    {/* remember */}
-
-                    <div className='flex gap-2 mb-10'>
-                       <input type="checkbox" />
-
-                       <div className='flex gap-22'>
-                        <div>
-                          <p className='text-sm text-[#ea580c]'>Remember me</p>
-
-                       </div>
-                       <div>
-                         <p className='text-sm text-[#ea580c]'>Forgot Password?</p>
-
-
-                       </div>
-
-
-
-
-                       </div>
-
-                       
-                     
-                      
-                    </div>
-                  
-                </div>
-
-                <div className='flex justify-center h-9 rounded   bg-[#ea580c]  '>
-                    <button className='text-white'>{loading ? "Logging in..." : "Log In"}</button>
-                </div>
-
-
-                {error && (
-  <p className="text-red-500 text-center mt-2">{error}</p>
-)}
-
-                
-
-            
-
-                
-              </form>
-              <div className='text-center'>
-                <p className='text-[#ea580c] '>Don't have an account? <Link to="/auth/signup"><span className='font-semibold'>Sign Up</span></Link> </p>
-              </div>
-          
-
-
-
-              </div>
-
-
-
+        {/* IMAGE SIDE */}
+        <div className="hidden lg:block lg:w-1/2">
+          <img
+            src={loginimg}
+            alt="login"
+            className="h-full w-full object-cover"
+          />
         </div>
 
+        {/* FORM SIDE */}
+        <div className="w-full lg:w-1/2 p-8 md:p-12 animate-slideUp">
+
+          <h1 className="text-3xl font-bold mb-8">
+            Log <span className="text-[#ea580c]">In</span>
+          </h1>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+
+            {/* EMAIL */}
+            <div className="border-b-2 border-gray-300 focus-within:border-[#ea580c] transition">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                className="w-full py-2 outline-none bg-transparent"
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div className="relative border-b-2 border-gray-300 focus-within:border-[#ea580c] transition">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Password"
+                className="w-full py-2 outline-none bg-transparent pr-10"
+              />
+
+              {/* Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#ea580c]"
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 6a9.77 9.77 0 0 1 8.94 6 9.77 9.77 0 0 1-2.34 3.16l1.41 1.41A11.73 11.73 0 0 0 22 12a11.8 11.8 0 0 0-10-6 11.5 11.5 0 0 0-3.72.61l1.61 1.61A9.77 9.77 0 0 1 12 6z"/>
+                    <path d="M2 3.27 3.28 2 22 20.72 20.73 22l-3.4-3.4A11.77 11.77 0 0 1 12 18a11.8 11.8 0 0 1-10-6 11.73 11.73 0 0 1 4.12-4.77L2 3.27z"/>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 6a9.77 9.77 0 0 1 8.94 6A9.77 9.77 0 0 1 12 18a9.77 9.77 0 0 1-8.94-6A9.77 9.77 0 0 1 12 6m0-2A11.8 11.8 0 0 0 2 12a11.8 11.8 0 0 0 10 8 11.8 11.8 0 0 0 10-8A11.8 11.8 0 0 0 12 4zm0 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            {/* REMEMBER ME */}
+            <div className="flex justify-between items-center text-sm">
+              <label className="flex items-center gap-2 text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                />
+                Remember me
+              </label>
+
+              <span   onClick={() => navigate("/auth/forgotPassword")} className="text-[#ea580c] hover:underline cursor-pointer">
+                Forgot Password?
+              </span>
+            </div>
+
+            {/* BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-2 rounded-lg text-white transition duration-300 transform ${
+                loading
+                  ? "bg-orange-300 cursor-not-allowed"
+                  : "bg-[#ea580c] hover:bg-orange-600 hover:scale-[1.02]"
+              }`}
+            >
+              {loading ? "Logging in..." : "Log In"}
+            </button>
+
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              to="/auth/signup"
+              className="text-[#ea580c] font-semibold hover:underline"
+            >
+              Sign Up
+            </Link>
+          </p>
+
+        </div>
       </div>
+
+      {/* ANIMATION STYLES */}
+      <style>
+        {`
+          .animate-fadeIn {
+            animation: fadeIn 0.6s ease-in-out;
+          }
+          .animate-slideUp {
+            animation: slideUp 0.6s ease-in-out;
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+        `}
+      </style>
+
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

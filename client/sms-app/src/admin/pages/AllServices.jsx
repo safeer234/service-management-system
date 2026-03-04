@@ -18,7 +18,6 @@ function AllServices() {
     fetchServices();
   }, []);
 
-  // ✅ Fetch Services
   const fetchServices = async () => {
     try {
       setLoading(true);
@@ -40,7 +39,6 @@ function AllServices() {
     }
   };
 
-  // ✅ Delete Service
   const deleteService = async (id) => {
     if (!window.confirm("Are you sure you want to delete this service?"))
       return;
@@ -57,7 +55,6 @@ function AllServices() {
     }
   };
 
-  // ✅ Open Edit Modal
   const startEdit = (service) => {
     setEditingService(service._id);
     setEditData({
@@ -69,7 +66,6 @@ function AllServices() {
     });
   };
 
-  // ✅ Handle Edit Change
   const handleEditChange = (e) => {
     const { name, value } = e.target;
 
@@ -79,7 +75,6 @@ function AllServices() {
     });
   };
 
-  // ✅ Update Service
   const updateService = async () => {
     try {
       const res = await axios.put(
@@ -101,13 +96,15 @@ function AllServices() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-6">All Services</h2>
+    <div className="p-4 sm:p-6 w-full">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6">
+        All Services
+      </h2>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && <p className="text-sm">Loading...</p>}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
           <div
             key={service._id}
@@ -116,7 +113,7 @@ function AllServices() {
             <img
               src={service.image}
               alt={service.name}
-              className="h-40 w-full object-cover rounded-md mb-3"
+              className="h-40 sm:h-44 lg:h-40 w-full object-cover rounded-md mb-3"
             />
 
             {editingService === service._id ? (
@@ -126,27 +123,30 @@ function AllServices() {
                   name="name"
                   value={editData.name}
                   onChange={handleEditChange}
-                  className="border w-full mb-2 p-1"
+                  className="border w-full mb-2 p-2 rounded text-sm"
                 />
+
                 <input
                   type="text"
                   name="description"
                   value={editData.description}
                   onChange={handleEditChange}
-                  className="border w-full mb-2 p-1"
+                  className="border w-full mb-2 p-2 rounded text-sm"
                 />
+
                 <input
                   type="number"
                   name="price"
                   value={editData.price}
                   onChange={handleEditChange}
-                  className="border w-full mb-2 p-1"
+                  className="border w-full mb-2 p-2 rounded text-sm"
                 />
+
                 <select
                   name="category"
                   value={editData.category}
                   onChange={handleEditChange}
-                  className="border w-full mb-2 p-1"
+                  className="border w-full mb-2 p-2 rounded text-sm"
                 >
                   <option value="Plumbing">Plumbing</option>
                   <option value="Electrical">Electrical</option>
@@ -161,29 +161,35 @@ function AllServices() {
                   name="isPopular"
                   value={editData.isPopular}
                   onChange={handleEditChange}
-                  className="border w-full mb-2 p-1"
+                  className="border w-full mb-3 p-2 rounded text-sm"
                 >
                   <option value="true">Popular</option>
                   <option value="false">Not Popular</option>
                 </select>
 
-                <button
-                  onClick={updateService}
-                  className="bg-green-500 text-white px-3 py-1 rounded mr-2"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setEditingService(null)}
-                  className="bg-gray-400 text-white px-3 py-1 rounded"
-                >
-                  Cancel
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={updateService}
+                    className="bg-green-500 text-white px-3 py-1 rounded text-sm"
+                  >
+                    Save
+                  </button>
+
+                  <button
+                    onClick={() => setEditingService(null)}
+                    className="bg-gray-400 text-white px-3 py-1 rounded text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </>
             ) : (
               <>
-                <h3 className="text-lg font-semibold">{service.name}</h3>
-                <p className="text-gray-600 text-sm mb-2">
+                <h3 className="text-lg font-semibold">
+                  {service.name}
+                </h3>
+
+                <p className="text-gray-600 text-sm mb-2 line-clamp-3">
                   {service.description}
                 </p>
 
@@ -201,17 +207,17 @@ function AllServices() {
                   </span>
                 )}
 
-                <div className="flex gap-3 mt-4">
+                <div className="flex flex-wrap gap-3 mt-4">
                   <button
                     onClick={() => startEdit(service)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => deleteService(service._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
+                    className="bg-red-500 text-white px-3 py-1 rounded text-sm"
                   >
                     Delete
                   </button>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -38,11 +39,11 @@ function MyBookings() {
         { withCredentials: true }
       );
 
-      alert("Booking cancelled");
+      toast.success("Booking cancelled");
       fetchBookings();
     } catch (err) {
-       console.error("Error:", err.response?.data || err.message);
-  alert("Something went wrong");
+      console.error("Error:", err.response?.data || err.message);
+      alert("Something went wrong");
     }
   };
 
@@ -64,8 +65,10 @@ function MyBookings() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
-      <h2 className="text-2xl font-semibold mb-6">My Bookings</h2>
+    <div className="p-4 sm:p-6 min-h-screen bg-gray-50">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-center sm:text-left">
+        My Bookings
+      </h2>
 
       {loading && <p>Loading bookings...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -74,19 +77,19 @@ function MyBookings() {
         <p>No bookings found.</p>
       )}
 
-      <div className="grid gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
         {bookings.map((booking) => (
           <div
             key={booking._id}
-            className="bg-white shadow-md rounded-xl p-6 transition hover:shadow-lg"
+            className="bg-white shadow-md rounded-xl p-4 sm:p-6 transition hover:shadow-lg"
           >
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
               <h3 className="text-lg font-semibold">
                 {booking.serviceType}
               </h3>
 
               <span
-                className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
+                className={`px-3 py-1 rounded-full text-sm w-fit ${getStatusColor(
                   booking.status
                 )}`}
               >
@@ -94,7 +97,7 @@ function MyBookings() {
               </span>
             </div>
 
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 mt-3 wrap-break-words">
               📍 {booking.serviceAddress}
             </p>
 
@@ -106,7 +109,7 @@ function MyBookings() {
               ₹ {booking.estimatedPrice}
             </p>
 
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-500 mt-2 wrap-break-words">
               {booking.description}
             </p>
 
@@ -124,12 +127,12 @@ function MyBookings() {
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-3 mt-4">
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
               {booking.paymentStatus !== "paid" &&
                 booking.status !== "cancelled" && (
                   <button
                     onClick={() => handlePayment(booking)}
-                    className="bg-[#ea580c] text-white px-4 py-2 rounded hover:bg-orange-600"
+                    className="bg-[#ea580c] text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto"
                   >
                     Make Payment
                   </button>
@@ -139,7 +142,7 @@ function MyBookings() {
                 booking.status !== "completed" && (
                   <button
                     onClick={() => handleCancel(booking._id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 w-full sm:w-auto"
                   >
                     Cancel
                   </button>
@@ -147,9 +150,9 @@ function MyBookings() {
 
               <button
                 onClick={() =>
-                  alert(`Current Status: ${booking.status}`)
+                  toast.success(`Current Status: ${booking.status}`)
                 }
-                className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+                className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 w-full sm:w-auto"
               >
                 View Status
               </button>

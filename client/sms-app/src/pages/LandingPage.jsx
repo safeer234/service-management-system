@@ -24,10 +24,8 @@ function LandingPage() {
 
   const today = new Date().toISOString().split("T")[0]
 
-  // ⭐ Random Rating Generator
   const generateRating = () => (Math.random() * 2 + 3).toFixed(1)
 
-  // Fetch Popular Services
   useEffect(() => {
     const fetchPopular = async () => {
       try {
@@ -48,7 +46,6 @@ function LandingPage() {
     fetchPopular()
   }, [])
 
-  // Booking Function
   const handleBooking = async () => {
     try {
       setLoading(true)
@@ -74,7 +71,6 @@ function LandingPage() {
         description: ""
       })
 
-      // 💳 Redirect to payment page
       navigate(`/payment/${res.data.data._id}`)
 
     } catch (err) {
@@ -87,33 +83,44 @@ function LandingPage() {
   return (
     <div>
 
-   {/* HERO SECTION (UNCHANGED DESIGN) */}
+   {/* HERO SECTION */}
 
-   <section className='h-screen mx-auto px-4 py-10 lg:py-20'>
-    <div className='flex flex-col lg:flex-row items-center gap-10 px-20 py-10 lg:gap-16'>
+   <section className='min-h-screen px-4 sm:px-6 lg:px-12 py-10'>
+    <div className='flex flex-col lg:flex-row items-center gap-10'>
 
-      <div>
-        <h1 className='text-7xl'>Find and Hire <br />Service Professionals</h1><br />
-        <p className='font-medium text-xl'>
-          Connect with trusted experts for all your home and business needs. <br />
+      <div className='text-center lg:text-left'>
+        <h1 className='text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight'>
+          Find and Hire <br /> Service Professionals
+        </h1>
+
+        <p className='mt-6 text-base sm:text-lg lg:text-xl'>
+          Connect with trusted experts for all your home and business needs.
           Book reliable services quickly, securely, and with confidence.
         </p>
 
         {!isAuthenticated ?(
-          <div className='flex gap-3 py-10'>
-            <Link to="/auth/login" className='bg-[#ea580c] rounded-3xl text-white w-30 h-10 flex items-center justify-center text-lg hover:bg-white hover:border-2 hover:border-[#ea580c] hover:text-[#ea580c]'>Contact</Link>
-            <Link to="/auth/login" className='border-2 border-[#ea580c] rounded-3xl text-[#ea580c] w-30 h-10 flex items-center justify-center text-lg hover:bg-[#ea580c] hover:text-white'>Book Service</Link>
+          <div className='flex flex-col sm:flex-row gap-4 mt-8 justify-center lg:justify-start'>
+            <Link to="/auth/login" className='bg-[#ea580c] rounded-full text-white px-6 py-2 text-lg hover:bg-white hover:border-2 hover:border-[#ea580c] hover:text-[#ea580c] text-center'>
+              Contact
+            </Link>
+            <Link to="/auth/login" className='border-2 border-[#ea580c] rounded-full text-[#ea580c] px-6 py-2 text-lg hover:bg-[#ea580c] hover:text-white text-center'>
+              Book Service
+            </Link>
           </div>
         ):(
-          <div className='flex gap-3 py-10'>
-            <Link to="/contact" className='bg-[#ea580c] rounded-3xl text-white w-30 h-10 flex items-center justify-center text-lg hover:bg-white hover:border-2 hover:border-[#ea580c] hover:text-[#ea580c]'>Contact</Link>
-            <Link to="/services" className='border-2 border-[#ea580c] rounded-3xl text-[#ea580c] w-30 h-10 flex items-center justify-center text-lg hover:bg-[#ea580c] hover:text-white'>Book Service</Link>
+          <div className='flex flex-col sm:flex-row gap-4 mt-8 justify-center lg:justify-start'>
+            <Link to="/contact" className='bg-[#ea580c] rounded-full text-white px-6 py-2 text-lg hover:bg-white hover:border-2 hover:border-[#ea580c] hover:text-[#ea580c] text-center'>
+              Contact
+            </Link>
+            <Link to="/services" className='border-2 border-[#ea580c] rounded-full text-[#ea580c] px-6 py-2 text-lg hover:bg-[#ea580c] hover:text-white text-center'>
+              Book Service
+            </Link>
           </div>
         )}
       </div>
 
-      <div>
-        <img src={heroimg} alt="" />
+      <div className='w-full lg:w-1/2'>
+        <img src={heroimg} alt="" className='w-full h-auto' />
       </div>
 
     </div>
@@ -121,10 +128,12 @@ function LandingPage() {
 
    {/* POPULAR SERVICES */}
 
-   <section className='mx-auto px-20 py-10'>
-      <h2 className='text-3xl font-medium mb-8'>Popular Services</h2>
+   <section className='px-4 sm:px-6 lg:px-12 py-10'>
+      <h2 className='text-2xl sm:text-3xl font-medium mb-8 text-center lg:text-left'>
+        Popular Services
+      </h2>
 
-      <div className='grid grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {popularServices.map((service)=>(
           <div key={service._id} className='bg-white shadow-lg rounded-xl p-4 hover:scale-105 duration-300'>
 
@@ -137,7 +146,6 @@ function LandingPage() {
             <h3 className='text-lg font-semibold'>{service.name}</h3>
             <p className='text-sm text-gray-600 mb-2'>{service.description}</p>
 
-            {/* ⭐ Rating */}
             <div className="flex items-center gap-1 mb-2">
               {"★★★★★".split("").map((_, i)=>(
                 <span key={i} className={i < Math.round(service.rating) ? "text-yellow-400" : "text-gray-300"}>
@@ -163,14 +171,14 @@ function LandingPage() {
       </div>
    </section>
 
-   {/* BOOKING MODAL WITH ANIMATION */}
+   {/* BOOKING MODAL */}
 
    {selectedService && (
-     <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 animate-fadeIn'>
+     <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4'>
 
-       <div className='bg-white p-8 rounded-xl w-125 transform transition-all duration-300 scale-100 animate-slideUp'>
+       <div className='bg-white p-6 sm:p-8 rounded-xl w-full max-w-lg'>
 
-         <h2 className='text-xl font-semibold mb-4'>
+         <h2 className='text-xl font-semibold mb-4 text-center'>
            Book {selectedService.name}
          </h2>
 
@@ -192,7 +200,7 @@ function LandingPage() {
 
          <input
            type="date"
-           min={today}  // 📅 Disable past dates
+           min={today}
            value={bookingData.preferredDate}
            onChange={(e)=>setBookingData({...bookingData, preferredDate:e.target.value})}
            className='w-full border p-2 mb-3 rounded'
@@ -213,10 +221,10 @@ function LandingPage() {
            className='w-full border p-2 mb-3 rounded'
          />
 
-         <div className='flex justify-between'>
+         <div className='flex flex-col sm:flex-row justify-between gap-3'>
            <button
              onClick={()=>setSelectedService(null)}
-             className='px-4 py-2 bg-gray-400 text-white rounded'
+             className='px-4 py-2 bg-gray-400 text-white rounded w-full sm:w-auto'
            >
              Cancel
            </button>
@@ -224,7 +232,7 @@ function LandingPage() {
            <button
              onClick={handleBooking}
              disabled={loading}
-             className='px-4 py-2 bg-[#ea580c] text-white rounded'
+             className='px-4 py-2 bg-[#ea580c] text-white rounded w-full sm:w-auto'
            >
              {loading ? "Booking..." : "Confirm Booking"}
            </button>
