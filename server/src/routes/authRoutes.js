@@ -29,7 +29,7 @@ router.post("/login", login);
  * GET /api/auth/me
  */
 
-router.post("/logout", logout);
+
 
 router.post("/logout", protect, logout);
 
