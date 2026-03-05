@@ -55,14 +55,32 @@ export const createServiceRequest = async (req, res) => {
  */
 export const getMyServiceRequests = async (req, res) => {
   try {
+
     const requests = await ServiceRequest.find({
       client: req.user.id
-    }).populate("provider", "name email");
+    }).lean();
+
+    // attach payment status
+    const updatedRequests = await Promise.all(
+      requests.map(async (reqItem) => {
+
+        const payment = await Payment.findOne({
+          serviceRequest: reqItem._id
+        });
+
+        return {
+          ...reqItem,
+          paymentStatus: payment ? payment.status : "pending"
+        };
+
+      })
+    );
 
     res.status(200).json({
       success: true,
-      data: requests
+      data: updatedRequests
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
