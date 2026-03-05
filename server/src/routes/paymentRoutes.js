@@ -1,9 +1,10 @@
 import express from "express";
 import {
-   createPayment,
+  createPayment,
   getPaymentByRequest,
   markPaymentAsPaid,
-  getAllPayments
+  getAllPayments,
+  fakePayment
 } from "../controllers/paymentController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -12,15 +13,18 @@ import { isAdmin, isClient } from "../middleware/roleMiddleware.js";
 const router = express.Router();
 
 /**
- * Get payment details for a service request
- * GET /api/payment/request/:requestId
- * Accessible by Client or Admin
+ * Create payment record
  */
-
-
-
 router.post("/create", createPayment);
 
+/**
+ * Fake payment for project demo
+ */
+router.post("/fake-pay", protect, isClient, fakePayment);
+
+/**
+ * Get payment details
+ */
 router.get(
   "/request/:requestId",
   isClient,
@@ -31,8 +35,6 @@ router.get(
 
 /**
  * Mark payment as paid
- * PUT /api/payment/:id/pay
- * Admin only
  */
 router.put(
   "/:id/pay",
@@ -43,8 +45,6 @@ router.put(
 
 /**
  * Get all payments
- * GET /api/payment
- * Admin only
  */
 router.get(
   "/",

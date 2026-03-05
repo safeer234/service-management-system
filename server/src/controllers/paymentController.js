@@ -1,16 +1,13 @@
 import Payment from "../models/Payment.js";
 import ServiceRequest from "../models/ServiceRequests.js";
 
-
 /**
- * @desc   Create payment for a service request
- * @route  POST /api/payment/create
+ * Create payment
  */
 export const createPayment = async (req, res) => {
   try {
     const { serviceRequestId, amount } = req.body;
 
-    // Check if request exists
     const request = await ServiceRequest.findById(serviceRequestId);
 
     if (!request) {
@@ -20,7 +17,6 @@ export const createPayment = async (req, res) => {
       });
     }
 
-    // Check if payment already exists
     const existingPayment = await Payment.findOne({
       serviceRequest: serviceRequestId
     });
@@ -55,12 +51,8 @@ export const createPayment = async (req, res) => {
   }
 };
 
-
-
-
 /**
- * @desc   Get payment details for a service request
- * @route  GET /api/payment/:requestId
+ * Get payment by request
  */
 export const getPaymentByRequest = async (req, res) => {
   try {
@@ -90,8 +82,7 @@ export const getPaymentByRequest = async (req, res) => {
 };
 
 /**
- * @desc   Mark payment as paid
- * @route  PUT /api/payment/:id/pay
+ * Mark payment as paid
  */
 export const markPaymentAsPaid = async (req, res) => {
   try {
@@ -109,7 +100,6 @@ export const markPaymentAsPaid = async (req, res) => {
 
     await payment.save();
 
-    // Optional: update service request status
     await ServiceRequest.findByIdAndUpdate(
       payment.serviceRequest,
       { status: "completed" }
@@ -128,8 +118,7 @@ export const markPaymentAsPaid = async (req, res) => {
 };
 
 /**
- * @desc   Get all payments (Admin use)
- * @route  GET /api/payment
+ * Get all payments
  */
 export const getAllPayments = async (req, res) => {
   try {
@@ -146,6 +135,47 @@ export const getAllPayments = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch payments"
+    });
+  }
+};
+
+/**
+ * 🔥 NEW FAKE PAYMENT METHOD (for demo projects)
+ */
+export const fakePayment = async (req, res) => {
+  try {
+    const { serviceRequestId, amount } = req.body;
+
+    const payment = await Payment.findOne({
+      serviceRequest: serviceRequestId
+    });
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment record not found"
+      });
+    }
+
+    payment.status = "paid";
+    payment.paidAt = new Date();
+
+    await payment.save();
+
+    await ServiceRequest.findByIdAndUpdate(
+      serviceRequestId,
+      { status: "completed" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Payment successful (Demo Mode)"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Payment failed"
     });
   }
 };
