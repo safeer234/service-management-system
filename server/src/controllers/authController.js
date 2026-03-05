@@ -136,17 +136,20 @@ export const getLoggedInUser = async (req, res) => {
 
 
 export const logout = (req, res) => {
+
   res.cookie("token", "", {
     httpOnly: true,
-    expires: new Date(0),
+    secure: true,
+    sameSite: "none",
+    expires: new Date(0)
   });
 
   res.status(200).json({
     success: true,
-    message: "Logged out successfully",
+    message: "Logged out successfully"
   });
-};
 
+};
 
 
 
