@@ -128,15 +128,15 @@ function MyBookings() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              {booking.paymentStatus !== "paid" &&
-                booking.status !== "cancelled" && (
-                  <button
-                    onClick={() => handlePayment(booking)}
-                    className="bg-[#ea580c] text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto"
-                  >
-                    Make Payment
-                  </button>
-                )}
+             {booking.status === "confirmed" &&
+  booking.paymentStatus !== "paid" && (
+  <button
+    onClick={() => handlePayment(booking)}
+    className="bg-[#ea580c] text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto"
+  >
+    Make Payment
+  </button>
+)}
 
               {booking.status !== "cancelled" &&
                 booking.status !== "completed" && (
