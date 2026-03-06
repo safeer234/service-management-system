@@ -5,6 +5,7 @@ import store from "./app/store";
 import './App.css'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AuthLoader from "./client/components/common/AuthLoader";
 
 import {
   createBrowserRouter,
@@ -35,6 +36,8 @@ import Payment from "./pages/Payment";
 import ProviderVerification from "./admin/pages/ProviderVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PaymentSuccess from "./pages/PaymentSuccess";
+
 export const router = createBrowserRouter([
 
   // client route
@@ -51,6 +54,7 @@ export const router = createBrowserRouter([
       { path: "bookings", element: <MyBookings /> },
       { path: "cart", element: <Cart /> },
        { path: "payment", element: <Payment /> },
+        { path: "paymentSuccess", element: <PaymentSuccess /> },
     ],
   },
 
@@ -103,7 +107,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
   <React.StrictMode>
   <Provider store={store}>
-<RouterProvider router={router} />
+    <AuthLoader>
+      <RouterProvider router={router} />
+    </AuthLoader>
+
   <ToastContainer position="top-right" autoClose={3000} />
   </Provider>
   </React.StrictMode>
