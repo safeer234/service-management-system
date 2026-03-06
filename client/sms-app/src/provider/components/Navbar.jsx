@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react';
+
 import { useSelector,useDispatch} from 'react-redux';
 import { Menu, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
@@ -8,16 +8,17 @@ import { logout } from '../../features/auth/authSlice';
 
 
 function Navbar() {
+   
     const dispatch = useDispatch();
-      const [isOpen, setIsOpen] = useState(false);
+      
       const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
   return (
     <div >
         {/* header */}
       <div className='shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
-        <div className='flex justify-between  items-center px-10 py-5'>
+        <div className='flex justify-between  items-center px-15 py-5'>
             {/* logo */}
-            <NavLink to="/home" className="text-2xl font-medium ">
+            <NavLink to="/admin/dashboard" className="text-2xl font-medium ">
                 Service<span className='text-[#ea580c]'>Hub</span>
             </NavLink>
             {/* desktop Menu */}
@@ -50,36 +51,22 @@ function Navbar() {
             
            
 
-            {/* mobile hamburger button */}
-            <button className='lg:hidden px-3' onClick={()=> setIsOpen(!isOpen)}>
-                {isOpen ?<X size={28} /> : <Menu size={28} />}
-
-            </button>
 
         </div>
         
 
-        {/*----------------------- mobile menu------------------ */}
-        {isOpen && (
-            <ul className='lg:hidden flex flex-col gap-4 bg-white p-4'>
-                <li>Home</li>
-                <li>Services</li>
-                <li>About</li>
-                <li>Contact</li>
-            </ul>
-        )}
-
+       
 
       </div>
       
       <main>
         <div className='z-10 absolute px-90    '>
-             
+            
         </div>
        <div>
         
        </div>
-     
+    
         
        
        
