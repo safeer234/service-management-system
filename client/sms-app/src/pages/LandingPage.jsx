@@ -127,8 +127,9 @@ function LandingPage() {
    </section>
 
    {/* POPULAR SERVICES */}
-
-   <section className='px-4 sm:px-6 lg:px-12 py-10'>
+   {!isAuthenticated ?(
+    <h1></h1>
+   ):(<section className='px-4 sm:px-6 lg:px-12 py-10'>
       <h2 className='text-2xl sm:text-3xl font-medium mb-8 text-center lg:text-left'>
         Popular Services
       </h2>
@@ -170,6 +171,10 @@ function LandingPage() {
         ))}
       </div>
    </section>
+
+   )}
+
+   
 
    {/* BOOKING MODAL */}
 
