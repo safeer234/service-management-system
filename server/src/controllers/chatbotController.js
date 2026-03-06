@@ -1,7 +1,7 @@
-import OpenAI from "openai";
+import Groq from "groq-sdk";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 export const askChatbot = async (req, res) => {
@@ -10,13 +10,13 @@ export const askChatbot = async (req, res) => {
 
     const { message } = req.body;
 
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await groq.chat.completions.create({
+      model: "llama3-8b-8192",
       messages: [
         {
           role: "system",
           content:
-            "You are a helpful AI assistant for a home service platform called ServiceHub. Help users with booking services like plumbing, electrician, AC repair, payment issues and account problems."
+            "You are a helpful AI assistant for ServiceHub, a home service platform. Help users with booking plumbing, electrician, AC repair, payments, and account issues."
         },
         {
           role: "user",
@@ -30,8 +30,13 @@ export const askChatbot = async (req, res) => {
     });
 
   } catch (error) {
+
     console.log(error);
-    res.status(500).json({ message: "AI error" });
+
+    res.status(500).json({
+      reply: "AI service temporarily unavailable."
+    });
+
   }
 
 };
