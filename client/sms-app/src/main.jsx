@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthLoader from "./client/components/common/AuthLoader";
 
+
 import {
   createBrowserRouter,
   RouterProvider,
