@@ -128,7 +128,7 @@ function MyBookings() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
-             {booking.status === "confirmed" &&
+             {booking.status === "accepted" &&
   booking.paymentStatus !== "paid" && (
   <button
     onClick={() => handlePayment(booking)}
