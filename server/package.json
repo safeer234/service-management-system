@@ -24,6 +24,7 @@
     "mongoose": "^9.1.6",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
+    "openai": "^6.27.0",
     "resend": "^6.9.3",
     "router": "^2.2.0"
   }

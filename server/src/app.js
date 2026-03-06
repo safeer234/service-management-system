@@ -7,6 +7,7 @@ import clientRoutes from "./routes/clientRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
 import providerRoutes from "./routes/providerRoutes.js"
 import serviceRoutes from "./routes/serviceRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
 const app = express();
 
 
@@ -38,5 +39,7 @@ app.use("/api/client",clientRoutes);
 app.use("/api/payment",paymentRoutes);
 app.use("/api/provider",providerRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+
 
 export default app;
