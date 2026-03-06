@@ -2,14 +2,16 @@ import React from 'react'
 import { useState } from 'react';
 import { useSelector,useDispatch} from 'react-redux';
 import { Menu, X, User } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { Navigate, NavLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { logout } from '../../../features/auth/authSlice';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
 
 const dispatch = useDispatch();
+  const navigate = useNavigate();
 const [isOpen, setIsOpen] = useState(false);
 const [profileOpen,setProfileOpen] = useState(false)
 
@@ -44,7 +46,7 @@ const handleLogout = async () => {
 
     dispatch(logout());
     setProfileOpen(false);
-
+navigate("/auth/login")
   } catch (error) {
     console.log(error);
   }
