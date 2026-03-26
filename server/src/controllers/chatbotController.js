@@ -1,6 +1,6 @@
 import Groq from "groq-sdk";
-import Service from "../models/serviceModel.js";
-import ServiceRequests from "../models/serviceRequestsModel.js";
+import Service from "../models/Service.js";
+import ServiceRequests from "../models/ServiceRequests.js";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
