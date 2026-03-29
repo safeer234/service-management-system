@@ -13,29 +13,61 @@ function Payment() {
     return <p className="p-6 text-center">No booking selected</p>;
   }
 
-  const handleFakePayment = async () => {
+ const handlePayment = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-    try {
+    // 1. Create order
+    const { data } = await axios.post(
+      "https://service-management-system-hj06.onrender.com/api/payment/create-order",
+      { serviceRequestId: booking._id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
 
-      await axios.post(
-        "https://service-management-system-hj06.onrender.com/api/payment/fake-pay",
-        {
-          serviceRequestId: booking._id,
-          amount: booking.estimatedPrice
-        },
-        { withCredentials: true }
-      );
+    const order = data.order;
 
-      toast.success("Payment Successful 🎉");
+    // 2. Load Razorpay script
+    const options = {
+      key: "rzp_test_xxxx", // your key
+      amount: order.amount,
+      currency: "INR",
+      name: "ServiceHub",
+      description: booking.serviceType,
+      order_id: order.id,
 
-      navigate("/paymentSuccess");
+      handler: async function (response) {
 
-    } catch (err) {
-      console.log(err);
-      toast.error("Payment failed");
-    }
+        // 3. Verify payment
+        await axios.post(
+          "https://service-management-system-hj06.onrender.com/api/payment/verify",
+          {
+            ...response,
+            serviceRequestId: booking._id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
 
-  };
+        toast.success("Payment Successful 🎉");
+        navigate("/paymentSuccess");
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.log(err);
+    toast.error("Payment failed");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
@@ -156,7 +188,7 @@ function Payment() {
           {/* Pay Button */}
 
           <button
-            onClick={handleFakePayment}
+            onClick={handlePayment}
             className="w-full py-3 rounded-lg bg-linear-to-r from-orange-500 to-orange-600 text-white font-semibold hover:opacity-90 transition"
           >
             Pay ₹ {booking.estimatedPrice}
