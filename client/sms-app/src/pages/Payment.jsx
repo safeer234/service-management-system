@@ -30,7 +30,7 @@ function Payment() {
 
     // 2. Load Razorpay script
     const options = {
-      key: "rzp_test_xxxx", // your key
+      key: "rzp_test_SX1s7jDLGkVc3w", // your key
       amount: order.amount,
       currency: "INR",
       name: "ServiceHub",
