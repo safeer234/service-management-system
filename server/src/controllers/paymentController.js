@@ -2,6 +2,8 @@ import Payment from "../models/Payment.js";
 import ServiceRequest from "../models/ServiceRequests.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import PDFDocument from "pdfkit";
+import sendInvoiceEmail from "../utils/sendInvoiceEmail.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -221,6 +223,33 @@ export const createRazorpayOrder = async (req, res) => {
 };
 
 
+import nodemailer from "nodemailer";
+
+const sendInvoiceEmail = async (email, pdfBuffer) => {
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+
+  await transporter.sendMail({
+    from: `"ServiceHub" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "Your Service Invoice",
+    text: "Thank you for your payment. Please find your invoice attached.",
+    attachments: [
+      {
+        filename: "invoice.pdf",
+        content: pdfBuffer
+      }
+    ]
+  });
+};
+
+
 export const verifyPayment = async (req, res) => {
   try {
     const {
@@ -230,37 +259,74 @@ export const verifyPayment = async (req, res) => {
       serviceRequestId
     } = req.body;
 
-    const body =
-      razorpay_order_id + "|" + razorpay_payment_id;
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(body.toString())
+      .update(body)
       .digest("hex");
 
     if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({ message: "Invalid signature" });
     }
 
-    // ✅ Mark payment as paid
-    await Payment.findOneAndUpdate(
+    // ✅ Update payment
+    const payment = await Payment.findOneAndUpdate(
       { serviceRequest: serviceRequestId },
       {
         status: "paid",
-        paidAt: new Date()
+        paidAt: new Date(),
+        paymentId: razorpay_payment_id
       },
       { new: true, upsert: true }
-    );
+    ).populate("client").populate("serviceRequest");
 
     await ServiceRequest.findByIdAndUpdate(
       serviceRequestId,
       { status: "completed" }
     );
 
+    // =========================
+    // 🧾 GENERATE PDF
+    // =========================
+    const doc = new PDFDocument();
+    const buffers = [];
+
+    doc.on("data", buffers.push.bind(buffers));
+
+    doc.on("end", async () => {
+      const pdfBuffer = Buffer.concat(buffers);
+
+      // =========================
+      // 📩 SEND EMAIL
+      // =========================
+      await sendInvoiceEmail(payment.client.email, pdfBuffer);
+    });
+
+    doc.fontSize(20).text("ServiceHub Invoice", { align: "center" });
+
+    doc.moveDown();
+    doc.text(`Invoice ID: ${payment._id}`);
+    doc.text(`Payment ID: ${razorpay_payment_id}`);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`);
+
+    doc.moveDown();
+    doc.text(`Customer: ${payment.client.username}`);
+    doc.text(`Email: ${payment.client.email}`);
+
+    doc.moveDown();
+    doc.text(`Service: ${payment.serviceRequest.serviceType}`);
+    doc.text(`Amount: ₹${payment.amount}`);
+
+    doc.moveDown();
+    doc.text("Thank you for your payment!", { align: "center" });
+
+    doc.end();
+
     res.json({ success: true });
 
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Verification failed" });
   }
 };
