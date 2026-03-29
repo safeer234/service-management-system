@@ -146,39 +146,7 @@ function Payment() {
 
           {/* Payment Method UI */}
 
-          <div className="space-y-3 mb-6">
-
-            <div className="border rounded-lg p-3 flex items-center justify-between cursor-pointer hover:border-[#ea580c]">
-
-              <span className="font-medium">UPI Payment</span>
-
-              <span className="text-gray-400 text-sm">
-                Recommended
-              </span>
-
-            </div>
-
-            <div className="border rounded-lg p-3 flex items-center justify-between cursor-pointer hover:border-[#ea580c]">
-
-              <span className="font-medium">Debit / Credit Card</span>
-
-              <span className="text-gray-400 text-sm">
-                Visa / MasterCard
-              </span>
-
-            </div>
-
-            <div className="border rounded-lg p-3 flex items-center justify-between cursor-pointer hover:border-[#ea580c]">
-
-              <span className="font-medium">Net Banking</span>
-
-              <span className="text-gray-400 text-sm">
-                All banks
-              </span>
-
-            </div>
-
-          </div>
+          
 
 
           {/* Pay Button */}
