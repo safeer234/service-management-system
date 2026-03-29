@@ -15,18 +15,16 @@ function Payment() {
 
  const handlePayment = async () => {
   try {
-    const token = localStorage.getItem("token");
+   
 
     // 1. Create order
     const { data } = await axios.post(
-      "https://service-management-system-hj06.onrender.com/api/payment/create-order",
-      { serviceRequestId: booking._id },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+  "https://service-management-system-hj06.onrender.com/api/payment/create-order",
+  { serviceRequestId: booking._id },
+  {
+    withCredentials: true
+  }
+);
 
     const order = data.order;
 
@@ -43,17 +41,15 @@ function Payment() {
 
         // 3. Verify payment
         await axios.post(
-          "https://service-management-system-hj06.onrender.com/api/payment/verify",
-          {
-            ...response,
-            serviceRequestId: booking._id
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+  "https://service-management-system-hj06.onrender.com/api/payment/verify",
+  {
+    ...response,
+    serviceRequestId: booking._id
+  },
+  {
+    withCredentials: true
+  }
+);
 
         toast.success("Payment Successful 🎉");
         navigate("/paymentSuccess");
