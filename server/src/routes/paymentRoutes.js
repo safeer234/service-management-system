@@ -53,4 +53,8 @@ router.get(
   getAllPayments
 );
 
+
+router.post("/create-order", protect, createRazorpayOrder);
+router.post("/verify", protect, verifyPayment);
+
 export default router;

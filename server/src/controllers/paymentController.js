@@ -1,5 +1,12 @@
 import Payment from "../models/Payment.js";
 import ServiceRequest from "../models/ServiceRequests.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 /**
  * Create payment
@@ -177,5 +184,83 @@ export const fakePayment = async (req, res) => {
       success: false,
       message: "Payment failed"
     });
+  }
+};
+
+
+
+export const createRazorpayOrder = async (req, res) => {
+  try {
+    const { serviceRequestId } = req.body;
+
+    const request = await ServiceRequest.findById(serviceRequestId);
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const amount = request.estimatedPrice * 100; // paise
+
+    const options = {
+      amount,
+      currency: "INR",
+      receipt: `receipt_${serviceRequestId}`
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    res.json({
+      success: true,
+      order
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Order creation failed" });
+  }
+};
+
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      serviceRequestId
+    } = req.body;
+
+    const body =
+      razorpay_order_id + "|" + razorpay_payment_id;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest("hex");
+
+    if (expectedSignature !== razorpay_signature) {
+      return res.status(400).json({ message: "Invalid signature" });
+    }
+
+    // ✅ Mark payment as paid
+    await Payment.findOneAndUpdate(
+      { serviceRequest: serviceRequestId },
+      {
+        status: "paid",
+        paidAt: new Date()
+      },
+      { new: true, upsert: true }
+    );
+
+    await ServiceRequest.findByIdAndUpdate(
+      serviceRequestId,
+      { status: "completed" }
+    );
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Verification failed" });
   }
 };
