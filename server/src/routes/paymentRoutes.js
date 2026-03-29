@@ -4,7 +4,10 @@ import {
   getPaymentByRequest,
   markPaymentAsPaid,
   getAllPayments,
-  fakePayment
+  fakePayment,
+  createRazorpayOrder,
+  verifyPayment
+
 } from "../controllers/paymentController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
