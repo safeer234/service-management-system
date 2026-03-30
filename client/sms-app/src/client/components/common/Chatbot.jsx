@@ -23,10 +23,13 @@ function Chatbot() {
 
     try {
 
-      const res = await axios.post(
-        "https://service-management-system-hj06.onrender.com/api/chatbot/ask",
-        { message }
-      );
+    const res =  await axios.post(
+  "https://service-management-system-hj06.onrender.com/api/chatbot/ask",
+  { message },
+  {
+    withCredentials: true
+  }
+);
 
       const botReply = {
         sender: "bot",
